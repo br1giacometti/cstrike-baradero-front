@@ -7,14 +7,8 @@ export type AppTranslations = {
     | "appLayout"
     | "auth"
     | "common"
-    | "product"
-    | "field"
-    | "aplicator"
-    | "warehouse"
-    | "movements"
-    | "map"
-    | "location"
-    | "game"
+    | "team"
+    | "player"
     | "category"]: ResourceKey;
 };
 
@@ -30,29 +24,17 @@ const resources: Resource = {
     appLayout: require("./locales/en/appLayout.json"),
     auth: require("./locales/en/auth.json"),
     common: require("./locales/en/common.json"),
-    product: require("./locales/en/product.json"),
-    field: require("./locales/en/field.json"),
-    aplicator: require("./locales/en/aplicator.json"),
-    warehouse: require("./locales/en/warehouse.json"),
-    movements: require("./locales/en/movements.json"),
+    team: require("./locales/en/team.json"),
     category: require("./locales/en/category.json"),
-    map: require("./locales/en/map.json"),
-    location: require("./locales/en/location.json"),
-    game: require("./locales/en/game.json"),
+    player: require("./locales/en/player.json"),
   },
   es: {
     appLayout: require("./locales/es/appLayout.json"),
     auth: require("./locales/es/auth.json"),
     common: require("./locales/es/common.json"),
-    product: require("./locales/es/product.json"),
-    field: require("./locales/es/field.json"),
-    aplicator: require("./locales/es/aplicator.json"),
-    warehouse: require("./locales/es/warehouse.json"),
-    movements: require("./locales/es/movements.json"),
+    team: require("./locales/es/team.json"),
     category: require("./locales/es/category.json"),
-    map: require("./locales/es/map.json"),
-    location: require("./locales/es/location.json"),
-    game: require("./locales/es/game.json"),
+    player: require("./locales/es/player.json"),
   },
 };
 

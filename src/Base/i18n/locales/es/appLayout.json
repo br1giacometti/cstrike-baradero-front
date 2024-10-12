@@ -13,7 +13,9 @@
       "field": "Campos",
       "aplicator": "Aplicadores",
       "warehouse": "Almacén",
-      "movements": "Movimientos"
+      "movements": "Movimientos",
+      "team": "Equipos",
+      "player": "Jugadores"
     }
   }
 }

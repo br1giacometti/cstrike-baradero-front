@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import { Box, Flex, Stack } from "@chakra-ui/react";
+
 import {
   BriefcaseIcon,
   HomeIcon,
@@ -8,6 +9,7 @@ import {
   ClipboardDocumentListIcon,
   CogIcon,
 } from "@heroicons/react/24/outline";
+
 import { SidebarProvider } from "Base/contexts/SidebarContext";
 import { DrawerProvider } from "Base/contexts/DrawerContext";
 import { Drawer, Header, Sidebar, Footer } from "Base/components";
@@ -25,44 +27,14 @@ const AppLayout = ({ children }: PropsWithChildren) => {
       icon: HomeIcon,
     },
     {
-      title: t("sidebar.menu.product"),
-      path: "/product",
+      title: t("sidebar.menu.team"),
+      path: "/team",
       icon: CubeIcon,
     },
     {
-      title: t("Categorias"),
-      path: "/category",
-      icon: ArchiveBoxIcon,
-    },
-    {
-      title: t("sidebar.menu.movements"),
-      path: "/movements",
-      icon: ClipboardDocumentListIcon,
-    },
-    {
-      title: t("Configuracion"),
-      path: "/stockparameters",
-      icon: CogIcon,
-    },
-    {
-      title: t("sidebar.menu.warehouse"),
-      path: "/warehouse",
-      icon: BriefcaseIcon,
-    },
-    {
-      title: "Mapas",
-      path: "/map",
-      icon: BriefcaseIcon,
-    },
-    {
-      title: "Location",
-      path: "/location",
-      icon: BriefcaseIcon,
-    },
-    {
-      title: "Game",
-      path: "/game",
-      icon: BriefcaseIcon,
+      title: t("sidebar.menu.player"),
+      path: "/player",
+      icon: CubeIcon,
     },
   ];
 

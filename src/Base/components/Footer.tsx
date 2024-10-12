@@ -24,10 +24,10 @@ const Footer = () => {
         }}
         align={"center"}
       >
-        <Logo width={30} />
+        <Logo />
       </Flex>
       <Text fontSize={"sm"} pt={6} textAlign={"center"}>
-        © {new Date().getFullYear()} {"GiacoNets - "}
+        © {new Date().getFullYear()} Kushi Tech. {t("footer.rightsReserved")}
       </Text>
     </Box>
   );

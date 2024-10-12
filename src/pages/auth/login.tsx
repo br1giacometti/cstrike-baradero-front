@@ -1,23 +1,22 @@
-import Login from "Auth/features/Login";
-import { useRouter } from "next/router";
 import { useCallback } from "react";
-// Adjust the import path as necessary
+import { useRouter } from "next/router";
+import Login from "Auth/features/Login";
 
 const LoginPage = () => {
   const router = useRouter();
 
   const navigateToHome = useCallback(() => {
-    router.replace("/game/");
+    router.replace("/");
   }, [router]);
 
-  const navigateToRegister = useCallback(() => {
-    router.push("/auth/register");
+  const navigateToSignUp = useCallback(() => {
+    router.push("/auth/sign-up");
   }, [router]);
 
   return (
     <Login
       navigateToHome={navigateToHome}
-      navigateToRegister={navigateToRegister}
+      navigateToSignUp={navigateToSignUp}
     />
   );
 };

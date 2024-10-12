@@ -12,22 +12,21 @@ import ContextMenuItem from "../types/ContextMenuItem";
 
 interface ProfileMenuProps {
   menu: ContextMenuItem[];
-  profileImageUrl?: string; // No es necesario si usamos una imagen fija
+  profileImageUrl?: string;
   username?: string;
-  logout: () => void;
 }
 
 const ProfileMenu = ({
   menu,
+  profileImageUrl,
   username,
-  logout,
 }: ProfileMenuProps): JSX.Element => (
   <Center bg="neutral.200" gap={4} height="100%" px={2}>
     <Avatar
       borderColor="black"
       borderWidth="3px"
       h={9}
-      src="/userIcon.png" // Ruta a la imagen en el directorio `public`
+      src={profileImageUrl}
       w={9}
     />
     <Menu>
@@ -45,7 +44,6 @@ const ProfileMenu = ({
             {menuItem.label}
           </MenuItem>
         ))}
-        <MenuItem onClick={logout}>Logout</MenuItem>
       </MenuList>
     </Menu>
   </Center>

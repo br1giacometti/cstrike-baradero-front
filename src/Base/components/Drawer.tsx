@@ -46,7 +46,7 @@ const Drawer = ({ menu, ...drawerProps }: DrawerProps) => {
         >
           <Box cursor="pointer">
             <Flex flexDir="column" h="fit-content" w="fit-content">
-              <Logo width={20} />
+              <Logo />
             </Flex>
           </Box>
           <IconButton

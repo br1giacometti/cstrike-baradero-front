@@ -1,6 +1,8 @@
 import { useAuthMethods, useAuthStatus } from "@kushitech/auth-module";
+
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Button,
   Flex,
@@ -12,7 +14,6 @@ import {
   Image,
   FormErrorMessage,
   Box,
-  Text,
 } from "@chakra-ui/react";
 import loginSchema, { LoginSchema } from "Auth/schemas/LoginSchema";
 import { useTranslation } from "Base/i18n";
@@ -23,12 +24,12 @@ import { Logo } from "Base/components";
 
 interface LoginProps {
   navigateToHome: () => void;
-  navigateToRegister: () => void;
+  navigateToSignUp: () => void;
 }
 
 export default function Login({
   navigateToHome,
-  navigateToRegister,
+  navigateToSignUp,
 }: LoginProps) {
   // const { t } = useTranslation("auth");
   const {
@@ -60,10 +61,6 @@ export default function Login({
       });
   };
 
-  const navigateToSignUp = useCallback(() => {
-    navigateToRegister();
-  }, [navigateToRegister]);
-
   return (
     <Stack direction={{ base: "column", md: "row" }} height="full" spacing={0}>
       <Box
@@ -94,7 +91,7 @@ export default function Login({
             onSubmit={handleSubmit(handleLogin)}
           >
             <Box mb={6}>
-              <Logo width={30} />
+              <Logo width={280} />
             </Box>
             <Stack flex={1} spacing={{ base: 0, md: 12 }}>
               <Stack
@@ -134,23 +131,25 @@ export default function Login({
                   type="submit"
                   variant={"solid"}
                 >
-                  {"Login"}
+                  {"Submit"}
                 </Button>
                 <Button variant="outline" onClick={navigateToSignUp}>
-                  {"Registrarse"}
+                  {"Register"}
                 </Button>
               </Stack>
             </Stack>
           </Stack>
         </Flex>
       </Box>
-      <Box flex={1} position="relative">
+      <Box flex={1}>
         <Image
           alt={"Login Image"}
           display={{ base: "none", md: "block" }}
           h="100%"
           objectFit={"cover"}
-          src={"https://i.redd.it/5hv98hq1n8911.jpg"}
+          src={
+            "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"
+          }
           w="100%"
         />
       </Box>
