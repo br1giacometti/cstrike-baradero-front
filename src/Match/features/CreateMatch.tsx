@@ -22,9 +22,19 @@ import MultiSelectMenu from "Player/components/multiselectMenu";
 
 interface CreateMatchProps {
   navigateToMatch: () => void;
+  tournamentId: number;
+  teamAId: number;
+  teamBId: number;
+  matchDayId: number;
 }
 
-const CreateMatch = ({ navigateToMatch }: CreateMatchProps) => {
+const CreateMatch = ({
+  navigateToMatch,
+  tournamentId,
+  teamAId,
+  teamBId,
+  matchDayId,
+}: CreateMatchProps) => {
   const { t } = useTranslation("team");
   const toast = useToast();
   const {
@@ -62,28 +72,21 @@ const CreateMatch = ({ navigateToMatch }: CreateMatchProps) => {
   const handleCreateMatch = (data: CreateMatchSchema) => {
     console.log("handleCreateMatch called");
     console.log("Match Data:", data); // Verificar qué datos se envían
-    setBody(data);
+    // Aquí puedes usar los parámetros para crear el partido
+    const matchData = {
+      ...data,
+      tournamentId, // Añade el tournamentId si es necesario
+      teamAId, // Añade el teamAId
+      teamBId, // Añade el teamBId
+      matchDayId, // Añade el matchDayId
+    };
+
+    setBody(matchData);
   };
 
   return (
     <FormPageLayout onSubmit={handleSubmit(handleCreateMatch)}>
-      <FormContainerLayout>
-        <FormSectionLayout>
-          <FormInputText
-            isRequired
-            errorMessage={
-              errors.name
-                ? (t(`errors.${errors.name.message}`, {
-                    ns: "common",
-                  }) as string)
-                : undefined
-            }
-            inputProps={register("name")}
-            label={t("Nombre")}
-            name="name"
-          />
-        </FormSectionLayout>
-      </FormContainerLayout>
+      <FormContainerLayout></FormContainerLayout>
       <Button
         colorScheme={"main"}
         isLoading={loading}

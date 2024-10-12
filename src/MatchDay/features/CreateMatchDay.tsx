@@ -100,8 +100,6 @@ const CreateMatchDay = ({ defaultValues }: MatchDayCreatePageProps) => {
         <FormSectionLayout>
           <FormInputText
             isRequired
-            isReadOnly // Hace que el campo sea de solo lectura
-            defaultValue={matchDayName} // Establece el nombre por defecto
             errorMessage={
               errors.name
                 ? (t(`errors.${errors.name.message}`, {

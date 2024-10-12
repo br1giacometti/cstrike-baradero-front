@@ -5,17 +5,34 @@ import EditPlayer from "Player/features/EditPlayer";
 import { User } from "Auth/types";
 import createPlayerRepository from "Player/data/PlayerRepository/createProductRepository";
 import { Match } from "Match/data/MatchRepository";
-import { MatchList } from "Match/features";
+import { MatchHeader, MatchList } from "Match/features";
 import createMatchRepository from "Match/data/MatchRepository/createMatchRepository";
+import PageLayout from "Base/layout/PageLayout";
+import { useCallbackRef } from "@chakra-ui/react";
+import { useCallback } from "react";
+import { useRouter } from "next/router";
 
 interface MatchFilterPageProps {
   defaultValues: Match[];
 }
 
-const MatchFilterPage = (props: MatchFilterPageProps) => (
-  <MatchList defaultValues={props.defaultValues} />
-);
+const MatchFilterPage = (props: MatchFilterPageProps) => {
+  const router = useRouter();
 
+  const navigateToCreateMatch = useCallback(
+    () => router.push("/matchday/create"),
+    [router]
+  );
+
+  return (
+    <PageLayout>
+      {{
+        header: <MatchHeader navigateToCreateMatch={navigateToCreateMatch} />,
+        content: <MatchList defaultValues={props.defaultValues} />,
+      }}
+    </PageLayout>
+  );
+};
 export const getServerSideProps = withAuth<User>(
   async (context: GetServerSidePropsContext, user) => {
     if (user.role === "USER") {

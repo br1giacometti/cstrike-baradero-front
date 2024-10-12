@@ -13,16 +13,8 @@ const MatchHeader = ({ navigateToCreateMatch }: MatchHeaderProps) => {
 
   return (
     <Flex justify="space-between" align="center">
-      <Heading>{t("sidebar.menu.match", { ns: "appLayout" })}</Heading>
-      <Flex gap={4}>
-        <Button
-          leftIcon={<Icon as={PlusIcon} />}
-          variant="outline"
-          onClick={navigateToCreateMatch}
-        >
-          Crear Torneo
-        </Button>
-      </Flex>
+      <Heading>{t("Resumen", { ns: "appLayout" })}</Heading>
+      <Flex gap={4}></Flex>
     </Flex>
   );
 };

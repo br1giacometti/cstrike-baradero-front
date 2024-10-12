@@ -1,23 +1,22 @@
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "Base/i18n";
-import DataTable, { BaseColumn } from "Base/components/DataTable";
-import { Match, useAllMatchService } from "Match/data/MatchRepository";
 import {
   Box,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Heading,
   Flex,
-  IconButton,
-  Tooltip,
+  Button, // Importa Button de Chakra UI
   useDisclosure,
   useToast,
+  Text,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
-import ConfirmDeleteModal from "Match/components/ConfirmDeleteDialog";
+import { useRouter } from "next/router"; // Importa useRouter para la navegación
+import { Match, useAllMatchService } from "Match/data/MatchRepository";
 import useDeleteMatchService from "Match/data/MatchRepository/hooks/useDeleteMatchService";
-
-type DeleteState = {
-  loading: boolean;
-  selected: Match | null;
-};
 
 interface MatchListProps {
   defaultValues: Match[];
@@ -26,75 +25,110 @@ interface MatchListProps {
 const MatchList = ({ defaultValues }: MatchListProps) => {
   const { t } = useTranslation("team");
   const toast = useToast();
+  const router = useRouter(); // Inicializa useRouter
 
-  const [deleteState, setDeleteState] = useState<DeleteState>({
-    loading: false,
-    selected: null,
-  });
+  const [expandedMatchId, setExpandedMatchId] = useState<number | null>(null);
 
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const { deleteMatch } = useDeleteMatchService();
+  const handleAccordionToggle = (matchId: number) => {
+    setExpandedMatchId((prev) => (prev === matchId ? null : matchId));
+  };
 
-  const handleDelete = useCallback(
-    (match: Match) => {
-      setDeleteState({ loading: false, selected: match });
-      onOpen();
-    },
-    [onOpen]
-  );
+  const handleCreateMatch = () => {
+    // Asegúrate de que hay al menos un partido en defaultValues
+    if (defaultValues.length > 0) {
+      const tournamentId = defaultValues[0].id; // Reemplaza con el campo correcto
+      const matchDayId = defaultValues[0].matchDayId; // Reemplaza con el campo correcto
 
-  const onDelete = useCallback(() => {
-    setDeleteState((prev) => ({ ...prev, loading: true }));
-    if (deleteState.selected?.id) {
-      deleteMatch(deleteState.selected?.id)
-        .then((deleted) => {
-          if (deleted) {
-            toast({
-              title: `${deleteState.selected?.id} fue eliminado`,
-              status: "success",
-              isClosable: true,
-            });
-          }
-        })
-        .catch(() => {
-          toast({
-            title: `El partido no se pudo eliminar`,
-            status: "error",
-            isClosable: true,
-          });
-        })
-        .finally(() => {
-          setDeleteState({
-            loading: false,
-            selected: null,
-          });
-          onClose();
+      // Asegúrate de que los IDs de los equipos estén disponibles
+      const teamAId = defaultValues[0]?.teamA?.id;
+      const teamBId = defaultValues[0]?.teamB?.id;
+
+      // Verifica que los IDs de los equipos no sean undefined
+      if (teamAId && teamBId) {
+        // Redirige a la página de creación de un partido
+        router.push({
+          pathname: "/match/create",
+          query: { tournamentId, teamAId, teamBId, matchDayId },
         });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudieron encontrar los IDs de los equipos.",
+          status: "error",
+          isClosable: true,
+        });
+      }
+    } else {
+      toast({
+        title: "Error",
+        description: "No hay partidos disponibles.",
+        status: "error",
+        isClosable: true,
+      });
     }
-  }, [deleteMatch, deleteState.selected, onClose, toast]);
-
-  const columns: BaseColumn<Match>[] = useMemo(
-    () => [
-      {
-        label: "Equipo A",
-        selector: (row) => row.teamA?.name,
-      },
-      {
-        label: "Equipo B",
-        selector: (row) => row.teamB?.name,
-      },
-    ],
-    [t]
-  );
-
+  };
   return (
     <>
-      <Flex alignItems="center" justifyContent="space-between"></Flex>
-      <DataTable
-        columns={columns}
-        data={defaultValues} // Usar defaultValues aquí
-        loading={false} // Ya que se pasan los datos como props
-      />
+      <Flex alignItems="center" justifyContent="space-between">
+        <Heading as="h1">
+          {defaultValues.length > 0 &&
+            defaultValues[0].teamA &&
+            defaultValues[0].teamB &&
+            `${defaultValues[0].teamA.name} vs ${defaultValues[0].teamB.name}`}
+        </Heading>
+        <Button
+          onClick={() => handleCreateMatch()}
+          // O el color que prefieras
+        >
+          Crear Partido
+        </Button>
+      </Flex>
+      <Accordion allowToggle>
+        {defaultValues.length > 0 ? (
+          defaultValues.map((match) => (
+            <AccordionItem key={match.id}>
+              <AccordionButton onClick={() => handleAccordionToggle(match.id)}>
+                <Box flex="1" textAlign="left" fontWeight="bold">
+                  {match.map
+                    ? `${match.teamA?.name || "Equipo A"} ${
+                        match.resultTeamA || 0
+                      } VS ${match.resultTeamB || 0} ${
+                        match.teamB?.name || "Equipo B"
+                      }`
+                    : `${match.teamA?.name || "Equipo A"} VS ${
+                        match.teamB?.name || "Equipo B"
+                      } - Próximamente`}
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel pb={4}>
+                <Box>
+                  {match.map ? (
+                    <Text fontWeight="bold">Nombre del mapa: {match.map}</Text>
+                  ) : (
+                    <Text fontWeight="bold">Próximamente</Text>
+                  )}
+                  <Text>Kills y estadísticas de los jugadores aquí...</Text>
+                </Box>
+              </AccordionPanel>
+            </AccordionItem>
+          ))
+        ) : (
+          <AccordionItem>
+            <AccordionButton>
+              <Box flex="1" textAlign="left">
+                Próximamente
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel pb={4}>
+              <Box>
+                <Text>No hay partidos programados en este momento.</Text>
+              </Box>
+            </AccordionPanel>
+          </AccordionItem>
+        )}
+      </Accordion>
     </>
   );
 };
