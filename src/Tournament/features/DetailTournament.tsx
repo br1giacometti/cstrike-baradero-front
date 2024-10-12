@@ -52,6 +52,13 @@ const DetailTournament = ({
     return Object.values(grouped).map((matchesGroup) => matchesGroup[0]); // Devolver solo un partido por grupo
   };
 
+  const navigateToMatchList = (
+    matchDayId: number,
+    teamId: number // Cambia esto a teamId
+  ) => {
+    router.push(`/match/filter/${matchDayId}/${teamId}`); // Usa la nueva URL
+  };
+
   const handleNavigateToMatchDay = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -112,7 +119,14 @@ const DetailTournament = ({
                       {uniqueMatches.length ? (
                         <Stack spacing={2}>
                           {uniqueMatches.map((match: Match) => (
-                            <Box key={`${match.teamAId}-${match.teamBId}`}>
+                            <Box
+                              key={`${match.teamAId}-${match.teamBId}`}
+                              onClick={() => {
+                                // Puedes elegir pasar teamAId o teamBId
+                                navigateToMatchList(matchDay.id, match.teamAId); // O match.teamBId según lo que necesites
+                              }}
+                              cursor="pointer"
+                            >
                               <Text>
                                 Equipo {match.teamAId} vs Equipo {match.teamBId}
                               </Text>
