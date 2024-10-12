@@ -13,7 +13,7 @@ const TeamCreatePage = () => {
   return (
     <PageLayout>
       {{
-        header: <Heading>{t("create.title")}</Heading>,
+        header: <Heading>{"Crear Equipo"}</Heading>,
         content: <CreateTeam navigateToTeam={navigateToTeam} />,
       }}
     </PageLayout>

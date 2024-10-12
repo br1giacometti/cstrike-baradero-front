@@ -6,13 +6,9 @@ import { useTranslation } from "react-i18next";
 
 interface TeamHeaderProps {
   navigateToCreateTeam: () => void;
-  navigateToEditMultiTeam: () => void;
 }
 
-const TeamHeader = ({
-  navigateToCreateTeam,
-  navigateToEditMultiTeam,
-}: TeamHeaderProps) => {
+const TeamHeader = ({ navigateToCreateTeam }: TeamHeaderProps) => {
   const { t } = useTranslation(["team", "appLayout"]);
 
   return (

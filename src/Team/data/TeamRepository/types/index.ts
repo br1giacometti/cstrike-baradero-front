@@ -1,10 +1,11 @@
 import { Category } from "Category/data/CategoryRepository";
+import { Player } from "Player/data/PlayerRepository";
 import { CreateTeamSchema } from "Team/schemas/createTeamSchema";
 import { UpdateTeamSchema } from "Team/schemas/UpdateProductSchema";
 
 export interface Team {
   name: string;
-  //players: Player[]
+  players: Player[];
   id: number;
 }
 

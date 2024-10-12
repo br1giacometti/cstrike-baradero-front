@@ -71,7 +71,7 @@ const CreateTeam = ({ navigateToTeam }: CreateTeamProps) => {
                 : undefined
             }
             inputProps={register("name")}
-            label={t("create.label.name")}
+            label={"Nombre Equipo"}
             name="name"
           />
         </FormSectionLayout>
@@ -85,7 +85,7 @@ const CreateTeam = ({ navigateToTeam }: CreateTeamProps) => {
         type="submit"
         variant={"solid"}
       >
-        {t("create.button.submit")}
+        {"Crear Equipo"}
       </Button>
     </FormPageLayout>
   );

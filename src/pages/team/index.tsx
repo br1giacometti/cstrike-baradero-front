@@ -21,21 +21,23 @@ const TeamPage = () => {
     [router]
   );
 
-  const navigateToEditMultiTeam = useCallback(
-    () => router.push("/team/multi-edit"),
+  const navigateToTeamDetails = useCallback(
+    (team: Team) => {
+      router.push(`/team/team-details/${team.id}`);
+    },
     [router]
   );
 
   return (
     <PageLayout>
       {{
-        header: (
-          <TeamHeader
-            navigateToCreateTeam={navigateToCreateTeam}
-            navigateToEditMultiTeam={navigateToEditMultiTeam}
+        header: <TeamHeader navigateToCreateTeam={navigateToCreateTeam} />,
+        content: (
+          <TeamList
+            navigateToEdit={navigateToEdit}
+            navigateToTeamDetails={navigateToTeamDetails}
           />
         ),
-        content: <TeamList navigateToEdit={navigateToEdit} />,
       }}
     </PageLayout>
   );

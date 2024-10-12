@@ -74,7 +74,7 @@ const CreatePlayer = ({ navigateToPlayer }: CreatePlayerProps) => {
                 : undefined
             }
             inputProps={register("name")}
-            label={t("create.label.description")}
+            label={t("Nombre")}
             name="description"
           />
 
@@ -118,7 +118,7 @@ const CreatePlayer = ({ navigateToPlayer }: CreatePlayerProps) => {
         type="submit"
         variant={"solid"}
       >
-        {t("create.button.submit")}
+        {"Crear Jugador"}
       </Button>
     </FormPageLayout>
   );

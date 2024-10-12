@@ -31,8 +31,9 @@ type DeleteState = {
 
 interface TeamListProps {
   navigateToEdit: (team: Team) => void;
+  navigateToTeamDetails: (team: Team) => void;
 }
-const TeamList = ({ navigateToEdit }: TeamListProps) => {
+const TeamList = ({ navigateToEdit, navigateToTeamDetails }: TeamListProps) => {
   const { t } = useTranslation("team");
   const toast = useToast();
 
@@ -144,7 +145,12 @@ const TeamList = ({ navigateToEdit }: TeamListProps) => {
   return (
     <>
       <Flex alignItems="center" justifyContent="space-between"></Flex>
-      <DataTable columns={columns} data={teamList} loading={loading} />
+      <DataTable
+        columns={columns}
+        data={teamList}
+        loading={loading}
+        onClickRow={navigateToTeamDetails}
+      />
       {deleteState.selected && (
         <ConfirmDeleteModal
           description={deleteState.selected?.name}
