@@ -39,6 +39,7 @@ const CreateMatchDay = ({ defaultValues }: MatchDayCreatePageProps) => {
   } = useForm<CreateMatchDaySchema>({
     resolver: zodResolver(createMatchDaySchema),
   });
+
   const [body, setBody] = useState<CreateMatchDaySchema | null>(null);
   const router = useRouter();
   const [matches, setMatches] = useState<
@@ -46,6 +47,11 @@ const CreateMatchDay = ({ defaultValues }: MatchDayCreatePageProps) => {
   >([]);
 
   const tournamentId = defaultValues.id; // Asegúrate de que esto esté correcto
+
+  // Genera el nombre por defecto (Fecha 1, Fecha 2, etc.)
+  const [matchDayName, setMatchDayName] = useState(
+    `Fecha ${defaultValues.MatchDay.length + 1}`
+  );
 
   const navigateToCreateMatchDay = useCallback(
     () => router.push(`/tournament/detail/${tournamentId}`),
@@ -94,6 +100,8 @@ const CreateMatchDay = ({ defaultValues }: MatchDayCreatePageProps) => {
         <FormSectionLayout>
           <FormInputText
             isRequired
+            isReadOnly // Hace que el campo sea de solo lectura
+            defaultValue={matchDayName} // Establece el nombre por defecto
             errorMessage={
               errors.name
                 ? (t(`errors.${errors.name.message}`, {
@@ -112,9 +120,6 @@ const CreateMatchDay = ({ defaultValues }: MatchDayCreatePageProps) => {
               onMatchAdd={addMatch} // Función para agregar partidos
               matches={matches}
             />
-            <FormErrorMessage>
-              {errors.matches && t(`errors.${errors.matches.message}`)}
-            </FormErrorMessage>
           </FormControl>
         </FormSectionLayout>
       </FormContainerLayout>
