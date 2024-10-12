@@ -15,7 +15,8 @@
       "warehouse": "Warehouse",
       "movements": "Movements",
       "team": "Equipos",
-      "player": "Jugadores"
+      "player": "Jugadores",
+      "tournament": "Torneos"
     }
   }
 }

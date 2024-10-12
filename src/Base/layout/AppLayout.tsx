@@ -27,6 +27,11 @@ const AppLayout = ({ children }: PropsWithChildren) => {
       icon: HomeIcon,
     },
     {
+      title: t("sidebar.menu.tournament"),
+      path: "/tournament",
+      icon: CubeIcon,
+    },
+    {
       title: t("sidebar.menu.team"),
       path: "/team",
       icon: CubeIcon,

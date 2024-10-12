@@ -9,6 +9,7 @@ export type AppTranslations = {
     | "common"
     | "team"
     | "player"
+    | "tournament"
     | "category"]: ResourceKey;
 };
 
@@ -27,6 +28,7 @@ const resources: Resource = {
     team: require("./locales/en/team.json"),
     category: require("./locales/en/category.json"),
     player: require("./locales/en/player.json"),
+    tournament: require("./locales/en/tournament.json"),
   },
   es: {
     appLayout: require("./locales/es/appLayout.json"),
@@ -35,6 +37,7 @@ const resources: Resource = {
     team: require("./locales/es/team.json"),
     category: require("./locales/es/category.json"),
     player: require("./locales/es/player.json"),
+    tournament: require("./locales/es/tournament.json"),
   },
 };
 

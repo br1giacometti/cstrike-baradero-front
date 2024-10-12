@@ -2,26 +2,28 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { TokenHandler } from "@kushitech/auth-module";
 import FetchActionTypes from "Base/types/FetchActionTypes";
 
-import listPlayerReducer, { initialState } from "../reducer/listPlayerReducer";
-import createPlayerRepository from "../createProductRepository";
+import listTournamentReducer, {
+  initialState,
+} from "../reducer/listTournamentReducer";
+import createTournamentRepository from "../createTournamentRepository";
 
-const useAllPlayerService = () => {
+const useAllTournamentService = () => {
   const [invalidated, setInvalidateCache] = useState<boolean | undefined>(
     undefined
   );
 
   const repository = useMemo(
-    () => createPlayerRepository(TokenHandler.getTokenFromCookies() || ""),
+    () => createTournamentRepository(TokenHandler.getTokenFromCookies() || ""),
     []
   );
-  const [{ data: playerList, loading, error }, dispatch] = useReducer(
-    listPlayerReducer,
+  const [{ data: tournamentList, loading, error }, dispatch] = useReducer(
+    listTournamentReducer,
     initialState
   );
 
   const invalidateCache = useCallback(() => setInvalidateCache(true), []);
 
-  // Nueva función refetch para volver a cargar los players
+  // Nueva función refetch para volver a cargar los tournaments
   const refetch = useCallback(() => {
     setInvalidateCache(true);
   }, []);
@@ -30,7 +32,7 @@ const useAllPlayerService = () => {
     if (invalidated || invalidated === undefined) {
       dispatch({ type: FetchActionTypes.Start });
       repository
-        .getAllPlayer()
+        .getAllTournament()
         .then((data) => {
           dispatch({ type: FetchActionTypes.Succeess, payload: data });
         })
@@ -46,7 +48,7 @@ const useAllPlayerService = () => {
     }
   }, [invalidated]);
 
-  return { playerList, loading, error, refetch };
+  return { tournamentList, loading, error, refetch };
 };
 
-export default useAllPlayerService;
+export default useAllTournamentService;
