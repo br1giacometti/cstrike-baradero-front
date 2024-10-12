@@ -5,9 +5,9 @@ import DataTable, { BaseColumn } from "Base/components/DataTable";
 
 import formatDate from "Base/utils/formatters/formatDate";
 import {
-  Tournament,
-  useAllTournamentService,
-} from "Tournament/data/TournamentRepository";
+  MatchDay,
+  useAllMatchDayService,
+} from "MatchDay/data/MatchDayRepository";
 import formatPrice from "Base/utils/formatters/formatPrice";
 
 import {
@@ -23,36 +23,36 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import useDeletePersonService from "Tournament/data/TournamentRepository/hooks/useDeleteTournamentService";
+import useDeletePersonService from "MatchDay/data/MatchDayRepository/hooks/useDeleteMatchDayService";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
-import ConfirmDeleteModal from "Tournament/components/ConfirmDeleteDialog";
-import useDeleteTournamentService from "Tournament/data/TournamentRepository/hooks/useDeleteTournamentService";
+import ConfirmDeleteModal from "MatchDay/components/ConfirmDeleteDialog";
+import useDeleteMatchDayService from "MatchDay/data/MatchDayRepository/hooks/useDeleteMatchDayService";
 
 type DeleteState = {
   loading: boolean;
-  selected: Tournament | null;
+  selected: MatchDay | null;
 };
 
-interface TournamentListProps {
-  navigateToEdit: (tournament: Tournament) => void;
-  navigateToDetail: (tournament: Tournament) => void;
+interface MatchDayListProps {
+  navigateToEdit: (matchday: MatchDay) => void;
+  navigateToDetail: (matchday: MatchDay) => void;
 }
-const TournamentList = ({
+const MatchDayList = ({
   navigateToEdit,
   navigateToDetail,
-}: TournamentListProps) => {
-  const { t } = useTranslation("tournament");
+}: MatchDayListProps) => {
+  const { t } = useTranslation("team");
   const toast = useToast();
 
   const {
     error,
     loading,
 
-    tournamentList,
-  } = useAllTournamentService();
+    matchdayList,
+  } = useAllMatchDayService();
 
   const { isOpen, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
-  const { deleteTournament } = useDeleteTournamentService();
+  const { deleteMatchDay } = useDeleteMatchDayService();
 
   const [deleteState, setDeleteState] = useState<DeleteState>({
     loading: false,
@@ -60,8 +60,8 @@ const TournamentList = ({
   });
 
   const handleDelete = useCallback(
-    (tournament: Tournament) => {
-      setDeleteState({ loading: false, selected: tournament });
+    (matchday: MatchDay) => {
+      setDeleteState({ loading: false, selected: matchday });
       onOpen();
     },
     [onOpen]
@@ -70,7 +70,7 @@ const TournamentList = ({
   const onDelete = useCallback(() => {
     setDeleteState((prev) => ({ ...prev, loading: true }));
     if (deleteState.selected?.id) {
-      deleteTournament(deleteState.selected?.id)
+      deleteMatchDay(deleteState.selected?.id)
         .then((deleted) => {
           if (deleted) {
             toast({
@@ -95,9 +95,9 @@ const TournamentList = ({
           onClose();
         });
     }
-  }, [deleteTournament, deleteState.selected, onClose, toast]);
+  }, [deleteMatchDay, deleteState.selected, onClose, toast]);
 
-  const columns: BaseColumn<Tournament>[] = useMemo(
+  const columns: BaseColumn<MatchDay>[] = useMemo(
     () => [
       {
         label: "Nombre",
@@ -159,7 +159,7 @@ const TournamentList = ({
       <Flex alignItems="center" justifyContent="space-between"></Flex>
       <DataTable
         columns={columns}
-        data={tournamentList}
+        data={matchdayList}
         loading={loading}
         onClickRow={navigateToDetail}
       />
@@ -179,4 +179,4 @@ const TournamentList = ({
   );
 };
 
-export default TournamentList;
+export default MatchDayList;

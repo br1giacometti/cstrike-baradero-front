@@ -1,17 +1,32 @@
 import { GetServerSidePropsContext } from "next";
 import { withAuth } from "@kushitech/auth-module";
 import { Tournament } from "Tournament/data/TournamentRepository";
-import DetailTournament from "Tournament/features/EditTournament";
 import { User } from "Auth/types";
 import createTournamentRepository from "Tournament/data/TournamentRepository/createTournamentRepository";
+import DetailTournament from "Tournament/features/DetailTournament";
+import { Router, useRouter } from "next/router";
+import { useCallback } from "react";
 
 interface TournamentEditPageProps {
   defaultValues: Tournament;
 }
 
-const TournamentEditPage = (props: TournamentEditPageProps) => (
-  <DetailTournament defaultValues={props.defaultValues} />
-);
+const TournamentEditPage = (props: TournamentEditPageProps) => {
+  const router = useRouter();
+  const tournamentId = props.defaultValues.id;
+
+  const navigateToMatchDay = useCallback(() => {
+    // Navega a la página de creación de MatchDay, pasando el ID del torneo como parte de la URL
+    router.push(`/matchday/create/${tournamentId}`); // Esto redirige a /matchday/create/[id]
+  }, [router, tournamentId]);
+
+  return (
+    <DetailTournament
+      defaultValues={props.defaultValues}
+      navigateToMatchDay={navigateToMatchDay}
+    />
+  );
+};
 
 export const getServerSideProps = withAuth<User>(
   async (context: GetServerSidePropsContext, user) => {

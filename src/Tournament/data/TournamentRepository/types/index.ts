@@ -1,3 +1,4 @@
+import { Match, MatchDay } from "MatchDay/data/MatchDayRepository";
 import { Team } from "Team/data/TeamRepository";
 import { CreateTournamentSchema } from "Tournament/schemas/createTournamentSchema";
 import { UpdateTournamentSchema } from "Tournament/schemas/UpdateTournamentSchema";
@@ -6,8 +7,9 @@ export interface Tournament {
   name: string;
   createdAt: Date;
   teams: Team[];
-  //matches: Match[];
+  matches: Match[];
   id: number;
+  MatchDay: MatchDay[];
 }
 
 export interface TournamentRepository {

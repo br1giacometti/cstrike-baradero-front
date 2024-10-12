@@ -2,28 +2,28 @@ import { useCallback } from "react";
 import { useRouter } from "next/router";
 
 import PageLayout from "Base/layout/PageLayout";
-import TournamentHeader from "Tournament/features/TournamentHeader";
-import TournamentList from "Tournament/features/TournamentList";
-import { Tournament } from "Tournament/data/TournamentRepository";
+import MatchDayHeader from "MatchDay/features/MatchDayHeader";
+import MatchDayList from "MatchDay/features/MatchDayList";
+import { MatchDay } from "MatchDay/data/MatchDayRepository";
 
-const TournamentPage = () => {
+const MatchDayPage = () => {
   const router = useRouter();
 
-  const navigateToCreateTournament = useCallback(
-    () => router.push("/tournament/create"),
+  const navigateToCreateMatchDay = useCallback(
+    () => router.push("/matchday/create"),
     [router]
   );
 
   const navigateToEdit = useCallback(
-    (tournament: Tournament) => {
-      router.push(`/tournament/edit/${tournament.id}`);
+    (matchday: MatchDay) => {
+      router.push(`/matchday/edit/${matchday.id}`);
     },
     [router]
   );
 
   const navigateToDetail = useCallback(
-    (tournament: Tournament) => {
-      router.push(`/tournament/detail/${tournament.id}`);
+    (matchday: MatchDay) => {
+      router.push(`/matchday/detail/${matchday.id}`);
     },
     [router]
   );
@@ -32,12 +32,10 @@ const TournamentPage = () => {
     <PageLayout>
       {{
         header: (
-          <TournamentHeader
-            navigateToCreateTournament={navigateToCreateTournament}
-          />
+          <MatchDayHeader navigateToCreateMatchDay={navigateToCreateMatchDay} />
         ),
         content: (
-          <TournamentList
+          <MatchDayList
             navigateToEdit={navigateToEdit}
             navigateToDetail={navigateToDetail}
           />
@@ -65,4 +63,4 @@ const TournamentPage = () => {
   };
 }); */
 
-export default TournamentPage;
+export default MatchDayPage;

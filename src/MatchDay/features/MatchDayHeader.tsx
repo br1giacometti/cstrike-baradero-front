@@ -4,23 +4,21 @@ import { useTranslation } from "react-i18next";
 
 // import { useTranslation } from "Base/i18n";
 
-interface TournamentHeaderProps {
-  navigateToCreateTournament: () => void;
+interface MatchDayHeaderProps {
+  navigateToCreateMatchDay: () => void;
 }
 
-const TournamentHeader = ({
-  navigateToCreateTournament,
-}: TournamentHeaderProps) => {
-  const { t } = useTranslation(["tournament", "appLayout"]);
+const MatchDayHeader = ({ navigateToCreateMatchDay }: MatchDayHeaderProps) => {
+  const { t } = useTranslation(["matchday", "appLayout"]);
 
   return (
     <Flex justify="space-between" align="center">
-      <Heading>{t("sidebar.menu.tournament", { ns: "appLayout" })}</Heading>
+      <Heading>{t("sidebar.menu.matchday", { ns: "appLayout" })}</Heading>
       <Flex gap={4}>
         <Button
           leftIcon={<Icon as={PlusIcon} />}
           variant="outline"
-          onClick={navigateToCreateTournament}
+          onClick={navigateToCreateMatchDay}
         >
           Crear Torneo
         </Button>
@@ -29,4 +27,4 @@ const TournamentHeader = ({
   );
 };
 
-export default TournamentHeader;
+export default MatchDayHeader;

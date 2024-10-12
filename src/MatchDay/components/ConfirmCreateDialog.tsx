@@ -8,9 +8,8 @@ import {
   AlertDialogFooter,
   Button,
 } from "@chakra-ui/react";
-import { useTranslation } from "Base/i18n";
 
-interface ConfirmDeleteModalProps {
+interface ConfirmCreateModalProps {
   title: string;
   description: string;
   isLoading: boolean;
@@ -19,21 +18,21 @@ interface ConfirmDeleteModalProps {
   onConfirm: () => void;
 }
 
-const ConfirmDeleteModal = ({
+const ConfirmCreateModal = ({
   description,
   isLoading,
   isOpen,
   onClose,
   onConfirm,
   title,
-}: ConfirmDeleteModalProps) => {
-  const { t } = useTranslation("team");
-  const cancelRef = useRef(null);
+}: ConfirmCreateModalProps) => {
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
 
   return (
     <AlertDialog
       isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
+      leastDestructiveRef={confirmRef} // Focus the confirm button initially
       onClose={onClose}
     >
       <AlertDialogOverlay>
@@ -46,15 +45,16 @@ const ConfirmDeleteModal = ({
 
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={onClose}>
-              {t("Cancelar")}
+              {"Cancelar"}
             </Button>
             <Button
-              colorScheme="red"
+              ref={confirmRef} // Add ref here
+              colorScheme="main"
               isLoading={isLoading}
               ml={3}
               onClick={onConfirm}
             >
-              {t("Confirmar")}
+              {"Confirmar"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -63,4 +63,4 @@ const ConfirmDeleteModal = ({
   );
 };
 
-export default ConfirmDeleteModal;
+export default ConfirmCreateModal;

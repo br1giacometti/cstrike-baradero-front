@@ -1,19 +1,19 @@
+import FetchActionTypes from "Base/types/FetchActionTypes";
+import { MatchDay } from "MatchDay/data/MatchDayRepository";
+import updateMatchDayReducer, {
+  initialState,
+} from "MatchDay/data/MatchDayRepository/reducer/updateMatchDayReducer";
 import { useReducer } from "react";
 
-import { Product } from "Product/data/ProductRepository";
-import FetchActionTypes from "Base/types/FetchActionTypes";
-import createProductReducer from "Product/data/ProductRepository/reducer/createProductReducer";
-import { initialState } from "Product/data/ProductRepository/reducer/listProductReducer";
-
-const useCreateProductStates = () => {
+const useUpdateMatchDayStates = () => {
   const [{ loading, error }, dispatch] = useReducer(
-    createProductReducer,
+    updateMatchDayReducer,
     initialState
   );
 
   const startFetch = () => dispatch({ type: FetchActionTypes.Start });
 
-  const successFetch = (payload: Product) =>
+  const successFetch = (payload: MatchDay) =>
     dispatch({ type: FetchActionTypes.Succeess, payload });
 
   const failureFetch = (errorMessage: string) =>
@@ -25,4 +25,4 @@ const useCreateProductStates = () => {
   return { loading, error, startFetch, successFetch, failureFetch };
 };
 
-export default useCreateProductStates;
+export default useUpdateMatchDayStates;
