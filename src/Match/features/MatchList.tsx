@@ -35,7 +35,7 @@ const MatchList = ({ defaultValues }: MatchListProps) => {
 
   const handleCreateMatch = () => {
     if (defaultValues.length > 0) {
-      const tournamentId = defaultValues[0].id;
+      const tournamentId = defaultValues[0].tournament?.id;
       const matchDayId = defaultValues[0].matchDayId;
 
       const teamAId = defaultValues[0]?.teamA?.id;
