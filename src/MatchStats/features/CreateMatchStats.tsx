@@ -13,13 +13,14 @@ import FormPageLayout from "Base/layout/FormPageLayout";
 import FormContainerLayout from "Base/layout/FormContainerLayout";
 import FormSectionLayout from "Base/layout/FormSectionLayout";
 import { FormInputText } from "Base/components";
-import { useCreateMatchStatsService } from "MatchStats/data/MatchStatsRepository";
+
 import useTeamOptions from "MatchStats/hooks/useTeamOptions";
 import createMatchStatsSchema, {
   CreateMatchStatsSchema,
 } from "MatchStats/schemas/createMatchStatsSchema";
 import MultiSelectMenu from "Player/components/multiselectMenu";
 import { useRouter } from "next/router";
+import useCreateMatchStatsService from "MatchStats/data/MatchStatsRepository/hooks/useCreateMatchStatsService";
 
 interface CreateMatchStatsProps {
   navigateToMatchStats: () => void;
@@ -69,7 +70,7 @@ const CreateMatchStats = ({
       }
       toast({
         status: "success",
-        description: t("Partido Creado}"),
+        description: t("Partido Creado"),
       });
 
       navigateToMatchStatsList(matchstatsDayId, teamAId);

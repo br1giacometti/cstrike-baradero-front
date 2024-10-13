@@ -70,7 +70,7 @@ const CreateMatch = ({
       }
       toast({
         status: "success",
-        description: t("Partido Creado}"),
+        description: t("Partido Creado"),
       });
 
       navigateToMatchList(matchDayId, teamAId);

@@ -269,42 +269,50 @@ const EditMatch = ({ defaultValues }: EditMatchProps) => {
               label={t("Nombre Mapa")}
               name="map"
             />
-            <FormInputText
-              errorMessage={
-                errors.resultTeamA
-                  ? (t(`update.error.${errors.resultTeamA.message}`) as string)
-                  : undefined
-              }
-              inputProps={register("resultTeamA")}
-              label={t(`Resultado ${teamA?.name}`)} // Aquí se muestra el nombre del equipo A
-              name="resultTeamA"
-              type="number"
-            />
-            <FormInputText
-              errorMessage={
-                errors.resultTeamB
-                  ? (t(`update.error.${errors.resultTeamB.message}`) as string)
-                  : undefined
-              }
-              inputProps={register("resultTeamB")}
-              label={t(`Resultado ${teamB?.name}`)} // Aquí se muestra el nombre del equipo B
-              name="resultTeamB"
-              type="number"
-            />
           </Stack>
           <Flex flexDirection="column" width="full">
             <Heading size="md" mb={4}>
               {t(`${teamA?.name}`)}
             </Heading>{" "}
+            <Box mb={4}>
+              <FormInputText
+                errorMessage={
+                  errors.resultTeamA
+                    ? (t(
+                        `update.error.${errors.resultTeamA.message}`
+                      ) as string)
+                    : undefined
+                }
+                inputProps={register("resultTeamA")}
+                label={t(`Resultado`)} // Aquí se muestra el nombre del equipo A
+                name="resultTeamA"
+                type="number"
+              />
+            </Box>
             {/* Aquí se muestra el nombre del equipo A */}
             <DataTable data={playersA} columns={columns} />
           </Flex>
           <Flex flexDirection="column" width="full">
             <Heading size="md">{t(`${teamB?.name}`)}</Heading>{" "}
+            <Box mb={4}>
+              <FormInputText
+                errorMessage={
+                  errors.resultTeamB
+                    ? (t(
+                        `update.error.${errors.resultTeamB.message}`
+                      ) as string)
+                    : undefined
+                }
+                inputProps={register("resultTeamB")}
+                label={t(`Resultado`)} // Aquí se muestra el nombre del equipo A
+                name="resultTeamB"
+                type="number"
+              />
+            </Box>
             {/* Aquí se muestra el nombre del equipo B */}
             <DataTable data={playersB} columns={columnsB} />
           </Flex>
-          <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+          <Button type="submit" colorScheme={"main"} isLoading={isSubmitting}>
             {t("Actualizar Partido")}
           </Button>
         </Flex>
