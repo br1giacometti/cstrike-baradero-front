@@ -1,14 +1,27 @@
 import { z } from "zod";
 
 const updateMatchSchema = z.object({
-  name: z.string().min(2, { message: "nameMustBeAtleast3" }),
-  teams: z
-    .array(
-      z.object({
-        id: z.number().int(), // Aquí especificas que id debe ser un número entero
-      })
-    )
-    .nonempty({ message: "teamsMustNotBeEmpty" }), // Asegúrate de que el array no esté vacío
+  map: z.string().min(2, { message: "nameMustBeAtleast3" }),
+  resultTeamA: z
+    .string()
+    .transform((val) => {
+      const parsed = Number.parseInt(val, 10);
+      if (Number.isNaN(parsed)) {
+        return null;
+      }
+      return parsed;
+    })
+    .optional(),
+  resultTeamB: z
+    .string()
+    .transform((val) => {
+      const parsed = Number.parseInt(val, 10);
+      if (Number.isNaN(parsed)) {
+        return null;
+      }
+      return parsed;
+    })
+    .optional(),
 });
 export type UpdateMatchSchema = z.infer<typeof updateMatchSchema>;
 

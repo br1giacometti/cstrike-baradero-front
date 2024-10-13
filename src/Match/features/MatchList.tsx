@@ -9,12 +9,12 @@ import {
   AccordionIcon,
   Heading,
   Flex,
-  Button, // Importa Button de Chakra UI
+  Button,
   useDisclosure,
   useToast,
   Text,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router"; // Importa useRouter para la navegación
+import { useRouter } from "next/router";
 import { Match, useAllMatchService } from "Match/data/MatchRepository";
 import useDeleteMatchService from "Match/data/MatchRepository/hooks/useDeleteMatchService";
 
@@ -25,7 +25,7 @@ interface MatchListProps {
 const MatchList = ({ defaultValues }: MatchListProps) => {
   const { t } = useTranslation("team");
   const toast = useToast();
-  const router = useRouter(); // Inicializa useRouter
+  const router = useRouter();
 
   const [expandedMatchId, setExpandedMatchId] = useState<number | null>(null);
 
@@ -34,18 +34,14 @@ const MatchList = ({ defaultValues }: MatchListProps) => {
   };
 
   const handleCreateMatch = () => {
-    // Asegúrate de que hay al menos un partido en defaultValues
     if (defaultValues.length > 0) {
-      const tournamentId = defaultValues[0].id; // Reemplaza con el campo correcto
-      const matchDayId = defaultValues[0].matchDayId; // Reemplaza con el campo correcto
+      const tournamentId = defaultValues[0].id;
+      const matchDayId = defaultValues[0].matchDayId;
 
-      // Asegúrate de que los IDs de los equipos estén disponibles
       const teamAId = defaultValues[0]?.teamA?.id;
       const teamBId = defaultValues[0]?.teamB?.id;
 
-      // Verifica que los IDs de los equipos no sean undefined
       if (teamAId && teamBId) {
-        // Redirige a la página de creación de un partido
         router.push({
           pathname: "/match/create",
           query: { tournamentId, teamAId, teamBId, matchDayId },
@@ -67,6 +63,11 @@ const MatchList = ({ defaultValues }: MatchListProps) => {
       });
     }
   };
+
+  const handleEditMatch = (matchId: number) => {
+    router.push(`/match/edit/${matchId}`); // Redirige a la página de edición del partido
+  };
+
   return (
     <>
       <Flex alignItems="center" justifyContent="space-between">
@@ -76,12 +77,7 @@ const MatchList = ({ defaultValues }: MatchListProps) => {
             defaultValues[0].teamB &&
             `${defaultValues[0].teamA.name} vs ${defaultValues[0].teamB.name}`}
         </Heading>
-        <Button
-          onClick={() => handleCreateMatch()}
-          // O el color que prefieras
-        >
-          Crear Partido
-        </Button>
+        <Button onClick={handleCreateMatch}>Crear Partido</Button>
       </Flex>
       <Accordion allowToggle>
         {defaultValues.length > 0 ? (
@@ -109,6 +105,14 @@ const MatchList = ({ defaultValues }: MatchListProps) => {
                     <Text fontWeight="bold">Próximamente</Text>
                   )}
                   <Text>Kills y estadísticas de los jugadores aquí...</Text>
+                  {/* Botón Editar Partido siempre visible */}
+                  <Button
+                    mt={2}
+                    colorScheme="blue"
+                    onClick={() => handleEditMatch(match.id)} // Llama a la función de edición
+                  >
+                    Editar Partido
+                  </Button>
                 </Box>
               </AccordionPanel>
             </AccordionItem>
@@ -124,6 +128,14 @@ const MatchList = ({ defaultValues }: MatchListProps) => {
             <AccordionPanel pb={4}>
               <Box>
                 <Text>No hay partidos programados en este momento.</Text>
+                {/* Botón Editar Partido también visible aquí */}
+                <Button
+                  mt={2}
+                  colorScheme="blue"
+                  onClick={() => handleEditMatch(0)} // Puedes manejar la edición de una forma que tenga sentido para tu aplicación
+                >
+                  Editar Partido
+                </Button>
               </Box>
             </AccordionPanel>
           </AccordionItem>

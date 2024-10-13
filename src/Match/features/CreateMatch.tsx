@@ -19,6 +19,7 @@ import createMatchSchema, {
   CreateMatchSchema,
 } from "Match/schemas/createMatchSchema";
 import MultiSelectMenu from "Player/components/multiselectMenu";
+import { useRouter } from "next/router";
 
 interface CreateMatchProps {
   navigateToMatch: () => void;
@@ -37,6 +38,7 @@ const CreateMatch = ({
 }: CreateMatchProps) => {
   const { t } = useTranslation("team");
   const toast = useToast();
+  const router = useRouter();
   const {
     control,
     register,
@@ -49,6 +51,13 @@ const CreateMatch = ({
 
   const { options, loading: loading2 } = useTeamOptions();
 
+  const navigateToMatchList = (
+    matchDayId: number,
+    teamId: number // Cambia esto a teamId
+  ) => {
+    router.push(`/match/filter/${matchDayId}/${teamId}`); // Usa la nueva URL
+  };
+
   const onSignUp = useCallback(
     (error?: string) => {
       if (error) {
@@ -60,9 +69,10 @@ const CreateMatch = ({
       }
       toast({
         status: "success",
-        description: t("toast.create.success"),
+        description: t("Partido Creado}"),
       });
-      navigateToMatch();
+
+      navigateToMatchList(matchDayId, teamAId);
     },
     [navigateToMatch, t, toast]
   );

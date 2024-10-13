@@ -14,61 +14,84 @@ import {
 } from "@chakra-ui/react";
 
 import { useRouter } from "next/router";
-import { Tournament } from "Tournament/data/TournamentRepository";
+import { Match } from "Match/data/MatchRepository";
 import { useTranslation } from "Base/i18n";
 
-import useUpdateTournamentService from "Tournament/data/TournamentRepository/hooks/useUpdateTournamentService";
+import useUpdateMatchService from "Match/data/MatchRepository/hooks/useUpdateMatchService";
 import { FormInputText, FormSelect } from "Base/components";
 
 import FormInputNumber from "Base/components/FormInputNumber";
 
-import useTeamOptions from "Tournament/hooks/useTeamOptions";
-import updateTournamentSchema, {
-  UpdateTournamentSchema,
-} from "Tournament/schemas/UpdateTournamentSchema";
-import useUpdateTournamentStates from "Tournament/hooks/useUpdateTournamentStates";
+import useTeamOptions from "Match/hooks/useTeamOptions";
+import updateMatchSchema, {
+  UpdateMatchSchema,
+} from "Match/schemas/UpdateMatchSchema";
+import useUpdateMatchStates from "Match/hooks/useUpdateMatchStates";
 
-interface EditTournamentProps {
-  defaultValues: Tournament;
+interface EditMatchProps {
+  defaultValues: Match;
 }
 
-const EditTournament = ({ defaultValues }: EditTournamentProps) => {
+const EditMatch = ({ defaultValues }: EditMatchProps) => {
   const router = useRouter();
   const toast = useToast();
-  const { t } = useTranslation("tournament");
+  const { t } = useTranslation("team");
   const {
     control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<UpdateTournamentSchema>({
-    resolver: zodResolver(updateTournamentSchema),
+  } = useForm<UpdateMatchSchema>({
+    resolver: zodResolver(updateMatchSchema),
     defaultValues: {
-      name: defaultValues.name,
+      map: defaultValues.map,
+      resultTeamA: defaultValues.resultTeamA,
+      resultTeamB: defaultValues.resultTeamB,
     },
   });
 
+  console.log(defaultValues);
+
+  const navigateToMatchList = (
+    matchDayId: number,
+    teamId: number // Cambia esto a teamId
+  ) => {
+    router.push(`/match/filter/${matchDayId}/${teamId}`); // Usa la nueva URL
+  };
+
   const { options, loading: loadingTeams } = useTeamOptions();
 
-  const { error, successFetch, failureFetch } = useUpdateTournamentStates();
+  const { error, successFetch, failureFetch } = useUpdateMatchStates();
 
-  const { updateTournament } = useUpdateTournamentService();
+  const { updateMatch } = useUpdateMatchService();
 
-  const handleUpdateTournament = (data: UpdateTournamentSchema) =>
-    updateTournament(data, defaultValues.id)
-      .then((tournamentUpdated) => {
-        reset();
-        successFetch(tournamentUpdated);
-        toast({
-          status: "success",
-          description: `${tournamentUpdated.name}  se actualizo`,
-        });
-        router.push("/tournament");
-      })
-      .catch((axiosError) => {
-        failureFetch(axiosError.response.data.message);
+  const handleUpdateMatch = async (data: UpdateMatchSchema) => {
+    try {
+      const matchUpdated = await updateMatch(data, defaultValues.id);
+      reset();
+      successFetch(matchUpdated);
+      toast({
+        status: "success",
+        description: `${matchUpdated.id} se actualizó`,
       });
+
+      const { matchDayId, teamA } = defaultValues;
+      if (matchDayId && teamA?.id) {
+        navigateToMatchList(matchDayId, teamA.id);
+      } else {
+        console.error(
+          "matchDayId or teamA is undefined in defaultValues:",
+          defaultValues
+        );
+        toast({
+          status: "error",
+          description:
+            "No se pudieron obtener los IDs necesarios para la navegación.",
+        });
+      }
+    } catch (axiosError) {}
+  };
 
   useEffect(() => {
     if (error) {
@@ -82,10 +105,10 @@ const EditTournament = ({ defaultValues }: EditTournamentProps) => {
       justifyContent={{ base: "center", lg: "flex-start" }}
       paddingBottom={16}
       paddingX={{ lg: 32 }}
-      onSubmit={handleSubmit(handleUpdateTournament)}
+      onSubmit={handleSubmit(handleUpdateMatch)}
     >
       <Box>
-        <Heading>{t("Actualizar Jugador")}</Heading>
+        <Heading>{t("Actualizar Partido")}</Heading>
         <Flex
           flexDirection={{ base: "column" }}
           gap={{ base: 12 }}
@@ -96,43 +119,34 @@ const EditTournament = ({ defaultValues }: EditTournamentProps) => {
             <FormInputText
               isRequired
               errorMessage={
-                errors.name
-                  ? (t(`update.error.${errors.name.message}`) as string) // TODO: Deberia eleminar este casteo: `as string`
+                errors.map
+                  ? (t(`update.error.${errors.map.message}`) as string) // TODO: Deberia eleminar este casteo: `as string`
                   : undefined
               }
-              inputProps={register("name")}
-              label={t("Nombre")}
-              name="name"
+              inputProps={register("map")}
+              label={t("Nombre Mapa")}
+              name="map"
             />
 
-            <Controller
-              control={control}
-              name="teamId"
-              render={({ field }) => (
-                <FormSelect
-                  ref={field.ref}
-                  errorMessage={
-                    errors.teamId?.message
-                      ? "Debe seleccionar un Equipo"
-                      : undefined
-                  }
-                  isLoading={loadingTeams} // Indica si está cargando
-                  label={t("Equipo")}
-                  name={field.name}
-                  options={options}
-                  value={
-                    options.find((option) => option.value === field.value) ||
-                    null
-                  }
-                  onChange={(selectedOption) => {
-                    if (selectedOption && "value" in selectedOption) {
-                      field.onChange(selectedOption.value);
-                    } else {
-                      field.onChange(null);
-                    }
-                  }}
-                />
-              )}
+            <FormInputText
+              errorMessage={
+                errors.resultTeamA
+                  ? (t(`update.error.${errors.resultTeamA.message}`) as string) // TODO: Deberia eleminar este casteo: `as string`
+                  : undefined
+              }
+              inputProps={register("resultTeamA")}
+              label={t("resultTeamA")}
+              name="resultTeamA"
+            />
+            <FormInputText
+              errorMessage={
+                errors.resultTeamB
+                  ? (t(`update.error.${errors.resultTeamB.message}`) as string) // TODO: Deberia eleminar este casteo: `as string`
+                  : undefined
+              }
+              inputProps={register("resultTeamB")}
+              label={t("resultTeamB")}
+              name="resultTeamB"
             />
           </Stack>
 
@@ -150,4 +164,4 @@ const EditTournament = ({ defaultValues }: EditTournamentProps) => {
   );
 };
 
-export default EditTournament;
+export default EditMatch;
