@@ -10,6 +10,8 @@ export interface Player {
   teamId: number;
   team: Team;
   id: number;
+  kills?: number;
+  deaths?: number;
 }
 
 export interface updatePricePlayerDto {

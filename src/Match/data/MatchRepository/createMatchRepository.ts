@@ -13,7 +13,7 @@ const createMatchRepository = (userToken: string): MatchRepository => {
   };
 
   return {
-    createMatch: createMatch,
+    createMatch,
     fetchAllMatchsById,
     getAllMatch,
     deleteMatch,

@@ -1,6 +1,7 @@
 import { CreateMatchSchema } from "Match/schemas/createMatchSchema";
 import { UpdateMatchSchema } from "Match/schemas/UpdateMatchSchema";
 import { MatchDay } from "MatchDay/data/MatchDayRepository";
+import { MatchStats } from "MatchStats/data/MatchStatsRepository";
 import { Team } from "Team/data/TeamRepository";
 import { Tournament } from "Tournament/data/TournamentRepository";
 
@@ -16,6 +17,7 @@ export interface Match {
   teamB?: Team;
   tournament?: Tournament;
   matchDay?: MatchDay;
+  matchStats?: MatchStats[];
 }
 
 export interface MatchRepository {

@@ -13,30 +13,29 @@ import FormPageLayout from "Base/layout/FormPageLayout";
 import FormContainerLayout from "Base/layout/FormContainerLayout";
 import FormSectionLayout from "Base/layout/FormSectionLayout";
 import { FormInputText } from "Base/components";
-
-import useTeamOptions from "Match/hooks/useTeamOptions";
-import createMatchSchema, {
-  CreateMatchSchema,
-} from "Match/schemas/createMatchSchema";
+import { useCreateMatchStatsService } from "MatchStats/data/MatchStatsRepository";
+import useTeamOptions from "MatchStats/hooks/useTeamOptions";
+import createMatchStatsSchema, {
+  CreateMatchStatsSchema,
+} from "MatchStats/schemas/createMatchStatsSchema";
 import MultiSelectMenu from "Player/components/multiselectMenu";
 import { useRouter } from "next/router";
-import { useCreateMatchService } from "Match/data/MatchRepository";
 
-interface CreateMatchProps {
-  navigateToMatch: () => void;
+interface CreateMatchStatsProps {
+  navigateToMatchStats: () => void;
   tournamentId: number;
   teamAId: number;
   teamBId: number;
-  matchDayId: number;
+  matchstatsDayId: number;
 }
 
-const CreateMatch = ({
-  navigateToMatch,
+const CreateMatchStats = ({
+  navigateToMatchStats,
   tournamentId,
   teamAId,
   teamBId,
-  matchDayId,
-}: CreateMatchProps) => {
+  matchstatsDayId,
+}: CreateMatchStatsProps) => {
   const { t } = useTranslation("team");
   const toast = useToast();
   const router = useRouter();
@@ -45,18 +44,18 @@ const CreateMatch = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateMatchSchema>({
-    resolver: zodResolver(createMatchSchema),
+  } = useForm<CreateMatchStatsSchema>({
+    resolver: zodResolver(createMatchStatsSchema),
   });
-  const [body, setBody] = useState<CreateMatchSchema | null>(null);
+  const [body, setBody] = useState<CreateMatchStatsSchema | null>(null);
 
   const { options, loading: loading2 } = useTeamOptions();
 
-  const navigateToMatchList = (
-    matchDayId: number,
+  const navigateToMatchStatsList = (
+    matchstatsDayId: number,
     teamId: number // Cambia esto a teamId
   ) => {
-    router.push(`/match/filter/${matchDayId}/${teamId}`); // Usa la nueva URL
+    router.push(`/matchstats/filter/${matchstatsDayId}/${teamId}`); // Usa la nueva URL
   };
 
   const onSignUp = useCallback(
@@ -73,30 +72,30 @@ const CreateMatch = ({
         description: t("Partido Creado}"),
       });
 
-      navigateToMatchList(matchDayId, teamAId);
+      navigateToMatchStatsList(matchstatsDayId, teamAId);
     },
-    [navigateToMatch, t, toast]
+    [navigateToMatchStats, t, toast]
   );
 
-  const { loading } = useCreateMatchService(body, onSignUp);
+  const { loading } = useCreateMatchStatsService(body, onSignUp);
 
-  const handleCreateMatch = (data: CreateMatchSchema) => {
-    console.log("handleCreateMatch called");
-    console.log("Match Data:", data); // Verificar qué datos se envían
+  const handleCreateMatchStats = (data: CreateMatchStatsSchema) => {
+    console.log("handleCreateMatchStats called");
+    console.log("MatchStats Data:", data); // Verificar qué datos se envían
     // Aquí puedes usar los parámetros para crear el partido
-    const matchData = {
+    const matchstatsData = {
       ...data,
       tournamentId, // Añade el tournamentId si es necesario
       teamAId, // Añade el teamAId
       teamBId, // Añade el teamBId
-      matchDayId, // Añade el matchDayId
+      matchstatsDayId, // Añade el matchstatsDayId
     };
 
-    setBody(matchData);
+    setBody(matchstatsData);
   };
 
   return (
-    <FormPageLayout onSubmit={handleSubmit(handleCreateMatch)}>
+    <FormPageLayout onSubmit={handleSubmit(handleCreateMatchStats)}>
       <FormContainerLayout></FormContainerLayout>
       <Button
         colorScheme={"main"}
@@ -113,4 +112,4 @@ const CreateMatch = ({
   );
 };
 
-export default CreateMatch;
+export default CreateMatchStats;
