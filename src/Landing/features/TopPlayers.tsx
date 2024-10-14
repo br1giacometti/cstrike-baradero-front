@@ -60,7 +60,7 @@ const TopPlayers = () => {
   }
 
   const handleGoToStats = () => {
-    router.push("/auth-public/public/public");
+    router.push("/auth-public/stats/stats");
   };
 
   return (
@@ -78,7 +78,7 @@ const TopPlayers = () => {
         w="full"
         onClick={handleGoToStats}
       >
-        Volver
+        Ver todo
       </Button>
     </Box>
   );

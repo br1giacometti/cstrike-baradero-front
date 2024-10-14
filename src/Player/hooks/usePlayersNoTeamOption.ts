@@ -1,6 +1,7 @@
 import OptionItem from "Base/types/OptionItem";
 import { useAllCategoryService } from "Category/data/CategoryRepository";
 import { useAllPlayerService } from "Player/data/PlayerRepository";
+import useAllPlayerNoTeamService from "Player/data/PlayerRepository/hooks/useAllPlayerNoTeamService";
 import { useAllTeamService } from "Team/data/TeamRepository";
 
 export interface UsePlayerOptionsReturn {
@@ -9,8 +10,8 @@ export interface UsePlayerOptionsReturn {
   error?: string;
 }
 
-const usePlayersOptions = (): UsePlayerOptionsReturn => {
-  const { playerList, loading, error } = useAllPlayerService();
+const usePlayersNoTeamOptions = (): UsePlayerOptionsReturn => {
+  const { playerList, loading, error } = useAllPlayerNoTeamService();
 
   return {
     options: playerList.map((player) => ({
@@ -22,4 +23,4 @@ const usePlayersOptions = (): UsePlayerOptionsReturn => {
   };
 };
 
-export default usePlayersOptions;
+export default usePlayersNoTeamOptions;

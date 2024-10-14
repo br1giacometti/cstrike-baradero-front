@@ -36,7 +36,7 @@ import { Player } from "Player/data/PlayerRepository";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import ConfirmDeleteModal from "MatchDay/components/ConfirmDeleteDialog";
 import useDisconnectTeamPlayerService from "Player/data/PlayerRepository/hooks/useDisconnectTeamPlayerService";
-import usePlayersOptions from "Player/hooks/usePlayersOption";
+import usePlayersNoTeamOptions from "Player/hooks/usePlayersNoTeamOption";
 import useConnectTeamPlayerService from "Player/data/PlayerRepository/hooks/useConnectTeamPlayerService";
 
 interface EditTeamProps {
@@ -73,7 +73,7 @@ const EditTeam = ({ defaultValues }: EditTeamProps) => {
     loading: false,
     selected: null,
   });
-  const { options, loading: playersLoading } = usePlayersOptions();
+  const { options, loading: playersLoading } = usePlayersNoTeamOptions();
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
   const { connectPlayer } = useConnectTeamPlayerService();
   const [players, setPlayers] = useState<Player[]>(defaultValues.players);
@@ -88,7 +88,7 @@ const EditTeam = ({ defaultValues }: EditTeamProps) => {
 
   const handleAddPlayer = useCallback(() => {
     if (selectedPlayerId !== null) {
-      // Aquí asumimos que `selectedPlayerId` es el value (ID del jugador) seleccionado
+      // Asumimos que `selectedPlayerId` es el value (ID del jugador) seleccionado
       const selectedPlayer = options.find(
         (option) => option.value === selectedPlayerId
       );
@@ -100,13 +100,33 @@ const EditTeam = ({ defaultValues }: EditTeamProps) => {
           teamId: defaultValues.id, // Asignando el ID del equipo o lo que necesites
         };
 
-        toast({
-          title: `Jugador agregado exitosamente`,
-          status: "success",
-        });
+        // Validar si el jugador ya existe en la lista
+        const playerExists = players.some(
+          (player) => player.id === newPlayer.id
+        );
 
-        // Actualiza la lista de jugadores
-        setPlayers((prev) => [...prev, newPlayer]);
+        if (playerExists) {
+          toast({
+            title: `El jugador ya está agregado`,
+            status: "warning", // Puedes usar "warning" o "error" según tu preferencia
+          });
+        } else {
+          connectPlayer(newPlayer.id, newPlayer.teamId)
+            .then(() => {
+              toast({
+                title: `Jugador agregado exitosamente`,
+                status: "success",
+              });
+              // Actualiza la lista de jugadores
+              setPlayers((prev) => [...prev, newPlayer]);
+            })
+            .catch(() => {
+              toast({
+                title: `Error al agregar el jugador`,
+                status: "error",
+              });
+            });
+        }
       } else {
         toast({
           title: `Jugador no encontrado`,
@@ -114,7 +134,7 @@ const EditTeam = ({ defaultValues }: EditTeamProps) => {
         });
       }
     }
-  }, [selectedPlayerId, options, defaultValues.id, toast]);
+  }, [selectedPlayerId, options, defaultValues.id, players, toast]);
 
   const onDelete = useCallback(() => {
     setDeleteState((prev) => ({ ...prev, loading: true }));

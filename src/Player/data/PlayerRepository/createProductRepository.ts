@@ -8,6 +8,7 @@ import getAllPlayerPaginated from "./services/getAllPlayerPaginated";
 import disconnectPlayer from "./services/disconnectPlayer";
 import deletePlayer from "./services/deletePlayer";
 import connectPlayer from "./services/connectPlayer";
+import getAllPlayerNoTeam from "./services/getAllPlayerNoTeam";
 
 const createPlayerRepository = (userToken: string): PlayerRepository => {
   playerClient.defaults.headers.common = {
@@ -17,6 +18,7 @@ const createPlayerRepository = (userToken: string): PlayerRepository => {
   return {
     createPlayer,
     getAllPlayer,
+    getAllPlayerNoTeam,
     getAllPlayerPaginated,
     deletePlayer,
     getPlayerById,

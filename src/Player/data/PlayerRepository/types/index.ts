@@ -34,6 +34,7 @@ export interface PlayerPaginatedReturn {
 export interface PlayerRepository {
   createPlayer: (body: CreatePlayerSchema) => Promise<Player>;
   getAllPlayer: () => Promise<Player[]>;
+  getAllPlayerNoTeam: () => Promise<Player[]>;
   getAllPlayerPaginated: (
     page?: number,
     limit?: number,

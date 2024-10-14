@@ -103,7 +103,7 @@ const PlayerList = ({ navigateToEdit }: PlayerListProps) => {
 
       {
         label: "Equipo",
-        selector: (row) => row.team.name,
+        selector: (row) => row.team?.name || "No Team",
       },
       {
         label: t("Acciones"),

@@ -145,12 +145,7 @@ const TeamList = ({ navigateToEdit, navigateToTeamDetails }: TeamListProps) => {
   return (
     <>
       <Flex alignItems="center" justifyContent="space-between"></Flex>
-      <DataTable
-        columns={columns}
-        data={teamList}
-        loading={loading}
-        onClickRow={navigateToTeamDetails}
-      />
+      <DataTable columns={columns} data={teamList} loading={loading} />
       {deleteState.selected && (
         <ConfirmDeleteModal
           description={deleteState.selected?.name}
