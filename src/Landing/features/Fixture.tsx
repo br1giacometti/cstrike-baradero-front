@@ -8,7 +8,6 @@ import {
   Image,
   Stack,
   Text,
-  IconButton,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -101,6 +100,18 @@ const Fixture = () => {
     }
   );
 
+  // Verificamos si alguno de los equipos ganó al menos un partido
+  const teamAWon = matches.some(
+    (match) =>
+      match.resultTeamA !== undefined &&
+      match.resultTeamA > (match.resultTeamB || -0)
+  );
+  const teamBWon = matches.some(
+    (match) =>
+      match.resultTeamB !== undefined &&
+      match.resultTeamB > (match.resultTeamA || -0)
+  );
+
   return (
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
       <Flex justify="space-between" align="center" mb={4}>
@@ -151,9 +162,66 @@ const Fixture = () => {
                       </Text>
                     </Flex>
 
-                    <Text color="white" mx={4} fontWeight="bold">
-                      VS
-                    </Text>
+                    {/* Cuadrados de resultado */}
+                    <Flex align="center" mx={4}>
+                      {[0, 1, 2].map((index) => {
+                        // Verificamos si el equipo A ganó en esta posición
+                        const teamAWonMatch =
+                          teamAWon &&
+                          index <
+                            matches.filter(
+                              (m) => (m.resultTeamA || 0) > (m.resultTeamB || 0)
+                            ).length;
+
+                        return (
+                          <Box
+                            key={index}
+                            width="20px"
+                            height="20px"
+                            border="2px solid"
+                            borderColor={
+                              teamAWonMatch ? "green.400" : "gray.500"
+                            }
+                            mr={2}
+                            backgroundColor={
+                              teamAWonMatch ? "green.400" : "transparent"
+                            } // Rellenar de verde si ganó
+                            opacity={teamAWonMatch ? 0.5 : 1} // Ajustar opacidad
+                          />
+                        );
+                      })}
+
+                      <Text color="white" fontWeight="bold">
+                        VS
+                      </Text>
+
+                      {[0, 1, 2].map((index) => {
+                        // Verificamos si el equipo B ganó en esta posición
+                        const teamBWonMatch =
+                          teamBWon &&
+                          index <
+                            matches.filter(
+                              (m) => (m.resultTeamB || 0) > (m.resultTeamA || 0)
+                            ).length;
+
+                        return (
+                          <Box
+                            key={index}
+                            width="20px"
+                            height="20px"
+                            border="2px solid"
+                            borderColor={
+                              teamBWonMatch ? "green.400" : "gray.500"
+                            }
+                            ml={2}
+                            backgroundColor={
+                              teamBWonMatch ? "green.400" : "transparent"
+                            } // Rellenar de verde si ganó
+                            opacity={teamBWonMatch ? 0.5 : 1} // Ajustar opacidad
+                          />
+                        );
+                      })}
+                    </Flex>
 
                     <Flex align="center">
                       <Text fontSize="lg" color="white" fontWeight="bold">
