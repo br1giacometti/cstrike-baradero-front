@@ -5,17 +5,22 @@ import tournamentClient from "./client";
 import updateTournament from "./services/updateTournament";
 import deleteTournament from "./services/deleteTournament";
 import getTournamentById from "./services/getTournamentById";
+import getAllFixture from "./services/getAllFixture";
 
+// Repositorio que permite crear uno con o sin token
 const createTournamentRepository = (
-  userToken: string
+  userToken?: string
 ): TournamentRepository => {
-  tournamentClient.defaults.headers.common = {
-    Authorization: `Bearer ${userToken}`,
-  };
+  if (userToken) {
+    tournamentClient.defaults.headers.common = {
+      Authorization: `Bearer ${userToken}`,
+    };
+  }
 
   return {
     createTournament,
     getAllTournament,
+    getAllFixture: () => getAllFixture(),
     deleteTournament,
     getTournamentById,
     updateTournament,

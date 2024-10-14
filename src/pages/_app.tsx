@@ -16,9 +16,11 @@ const isClientSide = typeof window !== "undefined";
 export default function App({ Component, pageProps, router }: AppProps) {
   const { loading: isRouteLoading } = useRouteLoading();
 
-  const handleRedirectToLogin = useCallback(() => {
+  // Redirección a la página principal ("/") si no está autenticado
+  const handleRedirectToHome = useCallback(() => {
     if (isClientSide) {
-      router.replace("/auth/login");
+      //router.replace("/auth-public/public");
+      router.replace("/auth-public/public");
     }
   }, [router]);
 
@@ -31,7 +33,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
           ) : (
             <PrivateRouteWrapper
               loadingElement={() => <Loading h="100vh" />}
-              redirectLogin={handleRedirectToLogin}
+              redirectLogin={handleRedirectToHome} // Redirige a "/"
             >
               <AppLayout>
                 {isRouteLoading ? (

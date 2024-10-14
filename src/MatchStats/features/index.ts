@@ -1,3 +1,3 @@
-export { default as CreateMatch } from "./CreateMatch";
-export { default as MatchHeader } from "./MatchHeader";
-export { default as MatchList } from "./MatchList";
+export { default as CreateMatch } from "./CreateMatchStats";
+export { default as MatchHeader } from "./MatchStatsHeader";
+export { default as MatchList } from "./MatchStatsList";

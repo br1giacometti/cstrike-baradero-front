@@ -12,9 +12,19 @@ export interface Tournament {
   MatchDay: MatchDay[];
 }
 
+export interface Fixture {
+  name: string;
+  createdAt: Date;
+  teams: Team[];
+  matches: Match[];
+  id: number;
+  MatchDay: MatchDay[];
+}
+
 export interface TournamentRepository {
   createTournament: (body: CreateTournamentSchema) => Promise<Tournament>;
   getAllTournament: () => Promise<Tournament[]>;
+  getAllFixture: () => Promise<Fixture[]>;
   deleteTournament: (tournamentId: number) => Promise<boolean>;
   getTournamentById: (tournamentId: number) => Promise<Tournament>;
   updateTournament: (

@@ -44,12 +44,7 @@ const TournamentList = ({
   const { t } = useTranslation("tournament");
   const toast = useToast();
 
-  const {
-    error,
-    loading,
-
-    tournamentList,
-  } = useAllTournamentService();
+  const { error, loading, tournamentList } = useAllTournamentService();
 
   const { isOpen, onClose, onOpen } = useDisclosure({ defaultIsOpen: false });
   const { deleteTournament } = useDeleteTournamentService();

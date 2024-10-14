@@ -18,6 +18,7 @@ export default function Home() {
       selector: (row: ParcelRow) => row.service,
     },
   ];
+
   return (
     <>
       <Head>
@@ -26,9 +27,9 @@ export default function Home() {
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      {/* <Box as="main" p={4}>
+      <Box as="main" p={4}>
         <DataTable columns={columns} data={[]} />
-      </Box> */}
+      </Box>
     </>
   );
 }

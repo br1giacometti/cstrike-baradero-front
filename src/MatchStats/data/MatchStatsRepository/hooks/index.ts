@@ -1,2 +1,2 @@
-export { default as useAllMatchService } from "./useAllMatchService";
-export { default as useCreateMatchService } from "./useCreateMatchService";
+export { default as useAllMatchService } from "./useAllMatchStatsService";
+export { default as useCreateMatchService } from "./useCreateMatchStatsService";
