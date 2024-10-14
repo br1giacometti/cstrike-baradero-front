@@ -5,17 +5,21 @@ import deleteMatchStats from "./services/deleteMatchStats";
 import getMatchStatsById from "./services/getMatchStatsById";
 import matchStatsClient from "./client";
 import { MatchStatsRepository } from "./types";
+import getTop10MatchStats from "./services/getTop10MatchStats";
 
 const createMatchStatsRepository = (
-  userToken: string
+  userToken?: string
 ): MatchStatsRepository => {
-  matchStatsClient.defaults.headers.common = {
-    Authorization: `Bearer ${userToken}`,
-  };
+  if (userToken) {
+    matchStatsClient.defaults.headers.common = {
+      Authorization: `Bearer ${userToken}`,
+    };
+  }
 
   return {
     createMatchStats,
-    getAllMatchStats,
+    getAllMatchStats: () => getAllMatchStats(),
+    getTop10MatchStats: () => getTop10MatchStats(),
     deleteMatchStats,
     getMatchStatsById,
     updateMatchStats,

@@ -2,23 +2,25 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { TokenHandler } from "@kushitech/auth-module";
 import FetchActionTypes from "Base/types/FetchActionTypes";
 
-import listTeamReducer, { initialState } from "../reducer/listTeamReducer";
-import createTeamRepository from "../createTeamRepository";
+import createMatchStatsRepository from "../createMatchStatsRepository";
+import listMatchStatsReducer, {
+  initialState,
+} from "../reducer/listMatchStatsReducer";
 
-const useAllTeamService = () => {
+const useTop10MatchStatsService = () => {
   const [invalidated, setInvalidateCache] = useState<boolean | undefined>(
     undefined
   );
 
-  const repository = useMemo(() => createTeamRepository(""), []);
-  const [{ data: teamList, loading, error }, dispatch] = useReducer(
-    listTeamReducer,
+  const repository = useMemo(() => createMatchStatsRepository(), []);
+  const [{ data: matchstatsList, loading, error }, dispatch] = useReducer(
+    listMatchStatsReducer,
     initialState
   );
 
   const invalidateCache = useCallback(() => setInvalidateCache(true), []);
 
-  // Nueva función refetch para volver a cargar los teams
+  // Nueva función refetch para volver a cargar los matchstatss
   const refetch = useCallback(() => {
     setInvalidateCache(true);
   }, []);
@@ -27,7 +29,7 @@ const useAllTeamService = () => {
     if (invalidated || invalidated === undefined) {
       dispatch({ type: FetchActionTypes.Start });
       repository
-        .getAllTeam()
+        .getAllMatchStats()
         .then((data) => {
           dispatch({ type: FetchActionTypes.Succeess, payload: data });
         })
@@ -43,7 +45,7 @@ const useAllTeamService = () => {
     }
   }, [invalidated]);
 
-  return { teamList, loading, error, refetch };
+  return { matchstatsList, loading, error, refetch };
 };
 
-export default useAllTeamService;
+export default useTop10MatchStatsService;
