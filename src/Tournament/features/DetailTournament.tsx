@@ -128,7 +128,8 @@ const DetailTournament = ({
                               cursor="pointer"
                             >
                               <Text>
-                                Equipo {match.teamAId} vs Equipo {match.teamBId}
+                                {match.teamA?.name} vs
+                                {match.teamB?.name}
                               </Text>
                             </Box>
                           ))}
