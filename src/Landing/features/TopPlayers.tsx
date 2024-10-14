@@ -8,16 +8,49 @@ import TableContent from "Landing/components/TableContent";
 import { useRouter } from "next/router";
 import useTop10MatchStatsService from "MatchStats/data/MatchStatsRepository/hooks/useTop10MatchStatsService";
 
+// Interfaz para datos agrupados
+interface PlayerAggregatedStats {
+  name: string;
+  team: string;
+  totalKills: number;
+  totalDeaths: number;
+}
+
 const TopPlayers = () => {
   const router = useRouter();
-  const { matchstatsList, loading, error } = useTop10MatchStatsService();
+  const { matchstatsList, loading, error } = useAllMatchStatsService();
 
-  const columns: BaseColumn<MatchStats>[] = useMemo(
+  // Agrupa los datos por jugador y suma los stats
+  const aggregatedStats = useMemo(() => {
+    const playerMap = new Map<string, PlayerAggregatedStats>();
+
+    matchstatsList.forEach((match) => {
+      const playerName = match.player?.name || "N/A";
+      const teamName = match.team?.name || "Sin equipo";
+
+      if (playerMap.has(playerName)) {
+        const existing = playerMap.get(playerName)!;
+        existing.totalKills += match.kills;
+        existing.totalDeaths += match.deaths;
+      } else {
+        playerMap.set(playerName, {
+          name: playerName,
+          team: teamName,
+          totalKills: match.kills,
+          totalDeaths: match.deaths,
+        });
+      }
+    });
+
+    return Array.from(playerMap.values());
+  }, [matchstatsList]);
+
+  const columns: BaseColumn<PlayerAggregatedStats>[] = useMemo(
     () => [
-      { label: "Jugador", selector: (row) => row.player?.name || "N/A" },
-      { label: "Equipo", selector: (row) => row.team?.name || "Sin equipo" },
-      { label: "Kills", selector: (row) => row.kills },
-      { label: "Muertes", selector: (row) => row.deaths },
+      { label: "Jugador", selector: (row) => row.name },
+      { label: "Equipo", selector: (row) => row.team },
+      { label: "Kills", selector: (row) => row.totalKills },
+      { label: "Muertes", selector: (row) => row.totalDeaths },
     ],
     []
   );
@@ -27,12 +60,16 @@ const TopPlayers = () => {
   }
 
   const handleGoToStats = () => {
-    router.push("/auth-public/stats/stats"); // Redirige a la ruta deseada
+    router.push("/auth-public/public/public");
   };
 
   return (
     <Box>
-      <TableContent data={matchstatsList} columns={columns} loading={loading} />
+      <TableContent
+        data={aggregatedStats}
+        columns={columns}
+        loading={loading}
+      />
       <Button
         mt={6}
         bg="rgb(177, 203, 2)"
@@ -41,7 +78,7 @@ const TopPlayers = () => {
         w="full"
         onClick={handleGoToStats}
       >
-        Ver Todos los jugadores
+        Volver
       </Button>
     </Box>
   );
