@@ -45,9 +45,7 @@ export const getServerSideProps = withAuth<User>(
       };
     }
 
-    const repository = createMatchRepository(
-      context.req.cookies.token as string
-    );
+    const repository = createMatchRepository();
 
     try {
       const player = await repository.fetchAllMatchsById(

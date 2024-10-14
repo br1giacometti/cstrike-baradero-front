@@ -98,47 +98,6 @@ const TournamentList = ({
         label: "Nombre",
         selector: (row) => row.name,
       },
-      {
-        label: t("Acciones"),
-        selector: (row) => (
-          <>
-            <Flex gap={2}>
-              <Tooltip label={t("Editar")} placement="bottom">
-                <IconButton
-                  aria-label="Edit icon"
-                  colorScheme="gray"
-                  icon={<EditIcon />}
-                  isDisabled={
-                    deleteState.loading && row.id !== deleteState.selected?.id
-                  }
-                  isLoading={
-                    deleteState.loading && row.id === deleteState.selected?.id
-                  }
-                  size="sm"
-                  variant="outline"
-                  onClick={() => navigateToEdit(row)}
-                />
-              </Tooltip>
-              <Tooltip label={t("Eliminar")} placement="bottom">
-                <IconButton
-                  aria-label="Delete icon"
-                  colorScheme="red"
-                  icon={<DeleteIcon />}
-                  isDisabled={
-                    deleteState.loading && row.id !== deleteState.selected?.id
-                  }
-                  isLoading={
-                    deleteState.loading && row.id === deleteState.selected?.id
-                  }
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleDelete(row)}
-                />
-              </Tooltip>
-            </Flex>
-          </>
-        ),
-      },
     ],
     [
       deleteState.loading,
@@ -158,18 +117,6 @@ const TournamentList = ({
         loading={loading}
         onClickRow={navigateToDetail}
       />
-      {deleteState.selected && (
-        <ConfirmDeleteModal
-          description={deleteState.selected?.name}
-          isLoading={deleteState.loading}
-          isOpen={isOpen}
-          title={t("Eliminar Torneo", {
-            description: deleteState.selected?.name,
-          })}
-          onClose={onClose}
-          onConfirm={onDelete}
-        />
-      )}
     </>
   );
 };

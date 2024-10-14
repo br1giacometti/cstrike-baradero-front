@@ -23,7 +23,7 @@ const AppLayout = ({ children }: PropsWithChildren) => {
   const sidebarMenu = [
     {
       title: t("sidebar.menu.home"),
-      path: "/movements/create-aplication",
+      path: "/tournament",
       icon: HomeIcon,
     },
     {

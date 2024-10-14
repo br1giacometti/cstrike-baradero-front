@@ -6,9 +6,9 @@ import { Team } from "Team/data/TeamRepository";
 
 export interface Player {
   name: string;
-  createdAt: Date;
+  createdAt?: Date;
   teamId: number;
-  team: Team;
+  team?: Team;
   id: number;
   kills?: number;
   deaths?: number;
@@ -40,7 +40,9 @@ export interface PlayerRepository {
     query?: string,
     teamId?: string
   ) => Promise<PlayerPaginatedReturn>;
+  disconnectPlayer: (playerId: number) => Promise<boolean>;
   deletePlayer: (playerId: number) => Promise<boolean>;
+  connectPlayer: (playerId: number, teamId: number) => Promise<boolean>;
   getPlayerById: (playerId: number) => Promise<Player>;
   updatePlayer: (body: UpdatePlayerSchema, playerId: number) => Promise<Player>;
 }

@@ -3,9 +3,11 @@ import createPlayer from "./services/createPlayer";
 import getAllPlayer from "./services/getAllPlayer";
 import playerClient from "./client";
 import updatePlayer from "./services/updatePlayer";
-import deletePlayer from "./services/deletePlayer";
 import getPlayerById from "./services/getPlayerById";
 import getAllPlayerPaginated from "./services/getAllPlayerPaginated";
+import disconnectPlayer from "./services/disconnectPlayer";
+import deletePlayer from "./services/deletePlayer";
+import connectPlayer from "./services/connectPlayer";
 
 const createPlayerRepository = (userToken: string): PlayerRepository => {
   playerClient.defaults.headers.common = {
@@ -19,6 +21,8 @@ const createPlayerRepository = (userToken: string): PlayerRepository => {
     deletePlayer,
     getPlayerById,
     updatePlayer,
+    disconnectPlayer,
+    connectPlayer,
   };
 };
 

@@ -19,8 +19,8 @@ export default function App({ Component, pageProps, router }: AppProps) {
   // Redirección a la página principal ("/") si no está autenticado
   const handleRedirectToHome = useCallback(() => {
     if (isClientSide) {
-      router.replace("/auth-public/public");
-      //router.replace("/auth/login");
+      //router.replace("/auth-public/public");
+      router.replace("/auth/login");
     }
   }, [router]);
 

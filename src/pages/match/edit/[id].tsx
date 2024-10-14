@@ -29,9 +29,7 @@ export const getServerSideProps = withAuth<User>(
       };
     }
 
-    const repository = createMatchRepository(
-      context.req.cookies.token as string
-    );
+    const repository = createMatchRepository();
 
     try {
       const match = await repository.getMatchById(
