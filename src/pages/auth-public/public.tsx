@@ -2,6 +2,7 @@
 import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 import IncomingMatch from "Landing/features/IncomingMatch";
 import NavegationBar from "Landing/features/NavegationBar";
+import ScoreTable from "Landing/features/ScoreTable";
 import { useRouter } from "next/router";
 
 const HomePage = () => {
@@ -36,6 +37,7 @@ const HomePage = () => {
           {" "}
           {/* Ajuste para el ancho y padding */}
           <IncomingMatch handleFixtureRedirect={handleFixtureRedirect} />
+          <ScoreTable />
         </Box>
       </Flex>
     </Box>

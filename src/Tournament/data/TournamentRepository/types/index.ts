@@ -21,10 +21,19 @@ export interface Fixture {
   MatchDay: MatchDay[];
 }
 
+export interface Score {
+  idEquipo: number;
+  nombreEquipo: string;
+  victoriasTotales: number;
+  derrotasTotales: number;
+  puntuacionTotal: number;
+}
+
 export interface TournamentRepository {
   createTournament: (body: CreateTournamentSchema) => Promise<Tournament>;
   getAllTournament: () => Promise<Tournament[]>;
   getAllFixture: () => Promise<Fixture[]>;
+  getAllScore: () => Promise<Score[]>;
   deleteTournament: (tournamentId: number) => Promise<boolean>;
   getTournamentById: (tournamentId: number) => Promise<Tournament>;
   updateTournament: (

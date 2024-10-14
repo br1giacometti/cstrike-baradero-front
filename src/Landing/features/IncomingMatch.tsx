@@ -110,8 +110,13 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
       <Flex justify="space-between" align="center" mb={4}>
         <Heading as="h2" size="lg" color="rgb(177, 203, 2)">
-          Fixture Completo
+          Próximos Partidos
         </Heading>
+        <Text fontSize="lg" color="rgb(177, 203, 2)">
+          {fixtureList.length > 0
+            ? fixtureList[0].MatchDay[currentRoundIndex]?.name
+            : "Cargando..."}
+        </Text>
       </Flex>
 
       <Stack spacing={4}>
