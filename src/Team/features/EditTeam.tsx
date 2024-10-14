@@ -24,13 +24,11 @@ import { useTranslation } from "Base/i18n";
 import useUpdateTeamService from "Team/data/TeamRepository/hooks/useUpdateTeamService";
 import { FormInputText } from "Base/components";
 
-import FormInputNumber from "Base/components/FormInputNumber";
 import updateTeamSchema, {
   UpdateTeamSchema,
 } from "Team/schemas/UpdateProductSchema";
 import useUpdateTeamStates from "Team/hooks/useUpdateTeamStates";
-import useDeletePlayerWitchTeamService from "Team/data/TeamRepository/hooks/useDeletePlayerWitchTeamService";
-import deletePlayerWitchTeam from "Team/data/TeamRepository/services/deletePlayerWitchTeam";
+
 import DataTable, { BaseColumn } from "Base/components/DataTable";
 import { Player } from "Player/data/PlayerRepository";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
