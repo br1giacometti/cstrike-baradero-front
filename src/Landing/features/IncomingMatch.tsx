@@ -10,6 +10,7 @@ import {
   Collapse,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { Player } from "Player/data/PlayerRepository";
 import { useEffect, useState } from "react";
 import useAllFixtureService from "Tournament/data/TournamentRepository/hooks/useAllFixtureService";
 
@@ -18,6 +19,7 @@ interface Team {
   id: number;
   name: string;
   logoUrl?: string;
+  players: Player[];
 }
 
 interface Match {
@@ -29,7 +31,11 @@ interface Match {
   resultTeamB: number | undefined; // Permitir undefined
 }
 
-const IncomingMatch = () => {
+interface TeamListProps {
+  handleFixtureRedirect: () => void;
+}
+
+const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [currentRoundIndex, setCurrentRoundIndex] = useState<number>(0); // Cambia a un índice en lugar de un string
@@ -78,7 +84,7 @@ const IncomingMatch = () => {
   }, [matches, fixtureList, currentRoundIndex]);
 
   const handleGoToFixture = () => {
-    router.push("/auth-public/fixture");
+    handleFixtureRedirect();
   };
 
   const handleToggleMatch = (id: number) => {
@@ -104,13 +110,8 @@ const IncomingMatch = () => {
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
       <Flex justify="space-between" align="center" mb={4}>
         <Heading as="h2" size="lg" color="rgb(177, 203, 2)">
-          Próximos Partidos
+          Fixture Completo
         </Heading>
-        <Text fontSize="lg" color="rgb(177, 203, 2)">
-          {fixtureList.length > 0
-            ? fixtureList[0].MatchDay[currentRoundIndex]?.name
-            : "Cargando..."}
-        </Text>
       </Flex>
 
       <Stack spacing={4}>
@@ -178,15 +179,21 @@ const IncomingMatch = () => {
               </Flex>
 
               <Collapse in={openMatchId === match.id}>
-                <Box mt={4} bg="gray.600" p={4} borderRadius="md">
+                <Box mt={4} bg="gray.500" p={4} borderRadius="md">
                   <Flex justify="space-between">
-                    <Box>
-                      <Text color="white">Jugador 1</Text>
-                      <Text color="white">Jugador 2</Text>
+                    <Box textAlign="left" width="50%">
+                      {match.teamA.players.map((player) => (
+                        <Text key={player.id} color="white" ml={4}>
+                          {player.name}
+                        </Text>
+                      ))}
                     </Box>
-                    <Box>
-                      <Text color="white">Jugador 1</Text>
-                      <Text color="white">Jugador 2</Text>
+                    <Box textAlign="right" width="50%">
+                      {match.teamB.players.map((player) => (
+                        <Text key={player.id} color="white" mr={4}>
+                          {player.name}
+                        </Text>
+                      ))}
                     </Box>
                   </Flex>
                 </Box>
