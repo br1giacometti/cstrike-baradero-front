@@ -33,6 +33,15 @@ const DetailTournament = ({
   // Función para navegar de regreso a la lista de torneos
   const handleGoBack = () => router.push("/tournament");
 
+  // Crear un mapeo de IDs a nombres de equipos
+  const teamNameMap = defaultValues.teams.reduce<Record<number, string>>(
+    (acc, team) => {
+      acc[team.id] = team.name;
+      return acc;
+    },
+    {}
+  );
+
   // Función para filtrar partidos por `matchDayId`
   const getMatchesByMatchDay = (matchDayId: number): Match[] =>
     defaultValues.matches.filter((match) => match.matchDayId === matchDayId);
@@ -92,7 +101,6 @@ const DetailTournament = ({
         </Box>
 
         {/* Fechas (MatchDays) con partidos */}
-
         <Box>
           <Flex justify="space-between" align="center">
             <Text fontWeight="bold">Fechas del Torneo:</Text>
@@ -128,8 +136,8 @@ const DetailTournament = ({
                               cursor="pointer"
                             >
                               <Text>
-                                {match.teamA?.name} vs
-                                {match.teamB?.name}
+                                Equipo {teamNameMap[match.teamAId]} vs Equipo{" "}
+                                {teamNameMap[match.teamBId]}
                               </Text>
                             </Box>
                           ))}
