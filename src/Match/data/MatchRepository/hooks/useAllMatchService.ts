@@ -10,10 +10,7 @@ const useAllMatchService = () => {
     undefined
   );
 
-  const repository = useMemo(
-    () => createMatchRepository(TokenHandler.getTokenFromCookies() || ""),
-    []
-  );
+  const repository = useMemo(() => createMatchRepository(), []);
   const [{ data: matchList, loading, error }, dispatch] = useReducer(
     listMatchReducer,
     initialState

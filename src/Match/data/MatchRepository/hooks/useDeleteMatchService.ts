@@ -3,10 +3,7 @@ import { useMemo } from "react";
 import createMatchRepository from "../createMatchRepository";
 
 const useDeleteMatchService = () => {
-  const repository = useMemo(
-    () => createMatchRepository(TokenHandler.getTokenFromCookies() || ""),
-    []
-  );
+  const repository = useMemo(() => createMatchRepository(), []);
 
   return { deleteMatch: repository.deleteMatch };
 };

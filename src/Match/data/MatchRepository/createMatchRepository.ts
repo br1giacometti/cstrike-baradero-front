@@ -7,10 +7,9 @@ import getMatchById from "./services/getMatchById";
 import matchClient from "./client";
 import { MatchRepository } from "./types";
 
-const createMatchRepository = (userToken: string): MatchRepository => {
-  matchClient.defaults.headers.common = {
-    Authorization: `Bearer ${userToken}`,
-  };
+const createMatchRepository = (): MatchRepository => {
+  // No se necesita manejar el token aquí
+  delete matchClient.defaults.headers.common["Authorization"]; // Asegúrate de que no haya cabeceras persistentes
 
   return {
     createMatch,

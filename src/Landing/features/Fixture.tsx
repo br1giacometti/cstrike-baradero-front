@@ -8,6 +8,7 @@ import {
   Image,
   Stack,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -72,6 +73,10 @@ const Fixture = () => {
     router.push("/auth-public/public"); // Redirige a la ruta deseada
   };
 
+  const navigateToMatchList = (matchDayId: number, teamId: number) => {
+    router.push(`/auth-public/filter/${matchDayId}/${teamId}`);
+  };
+
   // Agrupar partidos por fecha
   const matchesGroupedByDate = matches.reduce((acc, match) => {
     const matchDay = fixtureList[0].MatchDay.find(
@@ -134,7 +139,12 @@ const Fixture = () => {
                   p={4}
                   bg="gray.700"
                   borderRadius="md"
+                  cursor="pointer" // Cambiar el cursor para indicar que es clickeable
+                  _hover={{ bg: "gray.600" }} // Cambiar el fondo al pasar el mouse
                   mb={2}
+                  onClick={() =>
+                    navigateToMatchList(match.matchDayId, match.teamA.id)
+                  }
                 >
                   <Flex align="center" justify="space-between">
                     <Flex align="center">
@@ -157,9 +167,23 @@ const Fixture = () => {
                           mr={2}
                         ></Box>
                       )}
-                      <Text fontSize="lg" color="white" fontWeight="bold">
-                        {match.teamA.name}
-                      </Text>
+                      <Tooltip
+                        label={match.teamA.players
+                          .map((player) => player.name)
+                          .join(", ")}
+                        placement="top"
+                        hasArrow
+                        bg="gray.600"
+                      >
+                        <Text
+                          fontSize="lg"
+                          color="white"
+                          fontWeight="bold"
+                          cursor="pointer"
+                        >
+                          {match.teamA.name}
+                        </Text>
+                      </Tooltip>
                     </Flex>
 
                     {/* Cuadrados de resultado */}
@@ -224,9 +248,23 @@ const Fixture = () => {
                     </Flex>
 
                     <Flex align="center">
-                      <Text fontSize="lg" color="white" fontWeight="bold">
-                        {match.teamB.name}
-                      </Text>
+                      <Tooltip
+                        label={match.teamB.players
+                          .map((player) => player.name)
+                          .join(", ")}
+                        placement="top"
+                        hasArrow
+                        bg="gray.600"
+                      >
+                        <Text
+                          fontSize="lg"
+                          color="white"
+                          fontWeight="bold"
+                          cursor="pointer"
+                        >
+                          {match.teamB.name}
+                        </Text>
+                      </Tooltip>
                       {match.teamB.logoUrl ? (
                         <Image
                           src={match.teamB.logoUrl}
@@ -247,45 +285,13 @@ const Fixture = () => {
                         ></Box>
                       )}
                     </Flex>
-
-                    <Box
-                      onClick={() => {
-                        setExpandedMatch(
-                          expandedMatch === match.id ? null : match.id
-                        );
-                      }}
-                      p={5}
-                    >
-                      <Text color="rgb(177, 203, 2)">+</Text>
-                    </Box>
                   </Flex>
-
-                  <Collapse in={expandedMatch === match.id}>
-                    <Box mt={4} bg="gray.500" p={4} borderRadius="md">
-                      <Flex justify="space-between">
-                        <Box textAlign="left" width="50%">
-                          {match.teamA.players.map((player) => (
-                            <Text key={player.id} color="white" ml={4}>
-                              {player.name}
-                            </Text>
-                          ))}
-                        </Box>
-                        <Box textAlign="right" width="50%">
-                          {match.teamB.players.map((player) => (
-                            <Text key={player.id} color="white" mr={4}>
-                              {player.name}
-                            </Text>
-                          ))}
-                        </Box>
-                      </Flex>
-                    </Box>
-                  </Collapse>
                 </Box>
               ))}
             </Box>
           ))
         ) : (
-          <Text color="gray.400">No hay partidos próximos.</Text>
+          <Text color="white">No hay partidos disponibles.</Text>
         )}
       </Stack>
       <Button

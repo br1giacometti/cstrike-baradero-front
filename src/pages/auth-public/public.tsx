@@ -44,9 +44,6 @@ const HomePage = () => {
           <IncomingMatch handleFixtureRedirect={handleFixtureRedirect} />
           <ScoreTable />
           <Box mt={10}>
-            <TopPlayersTable />
-          </Box>
-          <Box mt={10}>
             <TeamsList />
           </Box>
         </Box>

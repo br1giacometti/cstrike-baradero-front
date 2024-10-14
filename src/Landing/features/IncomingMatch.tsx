@@ -7,7 +7,7 @@ import {
   Image,
   Stack,
   Text,
-  Collapse,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { Player } from "Player/data/PlayerRepository";
@@ -39,7 +39,6 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [currentRoundIndex, setCurrentRoundIndex] = useState<number>(0);
-  const [openMatchId, setOpenMatchId] = useState<number | null>(null);
   const { fixtureList, loading, error } = useAllFixtureService();
 
   useEffect(() => {
@@ -80,12 +79,8 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
     }
   }, [matches, fixtureList, currentRoundIndex]);
 
-  const handleGoToFixture = () => {
-    handleFixtureRedirect();
-  };
-
-  const handleToggleMatch = (id: number) => {
-    setOpenMatchId(openMatchId === id ? null : id);
+  const handleGoToHome = () => {
+    router.push("/auth-public/fixture/fixture"); // Redirige a la ruta deseada
   };
 
   // Filtrando partidos por ronda actual
@@ -132,9 +127,31 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                 match.resultTeamB > (match.resultTeamA || -0)
             );
 
+            const navigateToMatchList = (
+              matchDayId: number,
+              teamId: number
+            ) => {
+              router.push(`/auth-public/filter/${matchDayId}/${teamId}`);
+            };
             return (
-              <Box key={key} p={4} bg="gray.700" borderRadius="md">
-                <Flex align="center" justify="space-between">
+              <Box
+                key={key}
+                p={4}
+                bg="gray.700"
+                borderRadius="md"
+                cursor="pointer" // Cambiar el cursor para indicar que es clickeable
+                _hover={{ bg: "gray.600" }} // Cambiar el fondo al pasar el mouse
+              >
+                <Flex
+                  align="center"
+                  justify="space-between"
+                  onClick={() =>
+                    navigateToMatchList(
+                      matches[0].matchDayId,
+                      matches[0].teamA.id
+                    )
+                  }
+                >
                   <Flex align="center">
                     {matches[0].teamA.logoUrl ? (
                       <Image
@@ -155,9 +172,17 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                         mr={2}
                       ></Box>
                     )}
-                    <Text fontSize="lg" color="white" fontWeight="bold">
-                      {matches[0].teamA.name}
-                    </Text>
+                    <Tooltip
+                      label={matches[0].teamA.players
+                        .map((player) => player.name)
+                        .join(", ")}
+                      placement="top"
+                      aria-label={`Jugadores de ${matches[0].teamA.name}`}
+                    >
+                      <Text fontSize="lg" color="white" fontWeight="bold">
+                        {matches[0].teamA.name}
+                      </Text>
+                    </Tooltip>
                   </Flex>
 
                   {/* Cuadrados de resultado */}
@@ -218,9 +243,17 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                   </Flex>
 
                   <Flex align="center">
-                    <Text fontSize="lg" color="white" fontWeight="bold">
-                      {matches[0].teamB.name}
-                    </Text>
+                    <Tooltip
+                      label={matches[0].teamB.players
+                        .map((player) => player.name)
+                        .join(", ")}
+                      placement="top"
+                      aria-label={`Jugadores de ${matches[0].teamB.name}`}
+                    >
+                      <Text fontSize="lg" color="white" fontWeight="bold">
+                        {matches[0].teamB.name}
+                      </Text>
+                    </Tooltip>
                     {matches[0].teamB.logoUrl ? (
                       <Image
                         src={matches[0].teamB.logoUrl}
@@ -241,47 +274,23 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                       ></Box>
                     )}
                   </Flex>
-
-                  <Box onClick={() => handleToggleMatch(matches[0].id)} p={5}>
-                    <Text color="rgb(177, 203, 2)">+</Text>
-                  </Box>
                 </Flex>
-
-                <Collapse in={openMatchId === matches[0].id}>
-                  <Box mt={4} bg="gray.500" p={4} borderRadius="md">
-                    <Flex justify="space-between">
-                      <Box textAlign="left" width="50%">
-                        {matches[0].teamA.players.map((player) => (
-                          <Text key={player.id} color="white" ml={4}>
-                            {player.name}
-                          </Text>
-                        ))}
-                      </Box>
-                      <Box textAlign="right" width="50%">
-                        {matches[0].teamB.players.map((player) => (
-                          <Text key={player.id} color="white" mr={4}>
-                            {player.name}
-                          </Text>
-                        ))}
-                      </Box>
-                    </Flex>
-                  </Box>
-                </Collapse>
               </Box>
             );
           })
         ) : (
-          <Text color="gray.400">No hay partidos próximos.</Text>
+          <Text color="white">No hay partidos programados.</Text>
         )}
       </Stack>
-
+      {loading && <Text color="white">Cargando...</Text>}
+      {error && <Text color="red.500">Error al cargar partidos.</Text>}
       <Button
         mt={6}
         bg="rgb(177, 203, 2)"
         color="black"
         _hover={{ bg: "rgb(140, 160, 2)" }}
         w="full"
-        onClick={handleGoToFixture}
+        onClick={handleGoToHome}
       >
         Ver Fixture
       </Button>

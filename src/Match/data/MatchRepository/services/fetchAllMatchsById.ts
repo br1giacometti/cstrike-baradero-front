@@ -12,7 +12,7 @@ const fetchAllMatchsById = async (
     return response.data;
   } catch (error) {
     console.error("Error fetching matches:", error);
-    throw error; // Opcional: lanza el error para que pueda ser manejado por el llamador
+    throw error; // Lanza el error para manejarlo más adelante
   }
 };
 

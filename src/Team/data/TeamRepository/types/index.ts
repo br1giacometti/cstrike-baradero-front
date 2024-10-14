@@ -7,6 +7,7 @@ export interface Team {
   name: string;
   players: Player[];
   id: number;
+  logoUrl?: string;
 }
 
 export interface TeamRepository {
