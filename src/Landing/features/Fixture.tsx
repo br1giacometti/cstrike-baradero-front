@@ -63,7 +63,8 @@ const Fixture = () => {
           },
           resultTeamA: match.resultTeamA,
           resultTeamB: match.resultTeamB,
-        }));
+        }))
+        .sort((a, b) => a.matchDayId - b.matchDayId); // Ordenar por matchDayId ascendente
 
       setMatches(matchesFromApi);
     }
@@ -135,7 +136,7 @@ const Fixture = () => {
                   bg="gray.700"
                   borderRadius="md"
                   cursor="pointer"
-                  _hover={{ bg: "gray.600" }} // Cambiar el fondo al pasar el mouse
+                  _hover={{ bg: "gray.600" }}
                   mb={2}
                   onClick={() => navigateToMatchList(teamA.id, teamB.id)}
                 >
@@ -175,67 +176,53 @@ const Fixture = () => {
                       {results.map((result, index) => {
                         const { resultTeamA = 0, resultTeamB = 0 } = result;
 
-                        if (resultTeamA > 0 || resultTeamB > 0) {
-                          return (
-                            <Flex key={index} align="center">
-                              {resultTeamA > resultTeamB ? (
-                                <>
-                                  <Box
-                                    key={index}
-                                    width="20px"
-                                    height="20px"
-                                    border="2px solid"
-                                    borderColor={"green.400"}
-                                    bg={"green.400"}
-                                    opacity={0.5}
-                                    mr={2}
-                                  />
-                                </>
-                              ) : resultTeamA < resultTeamB ? (
-                                <>
-                                  <Box
-                                    key={index}
-                                    width="20px"
-                                    height="20px"
-                                    border="2px solid"
-                                    borderColor={"green.400"}
-                                    bg={"green.400"}
-                                    opacity={0.5}
-                                    mr={2}
-                                  />
-                                </>
-                              ) : (
-                                <Text
-                                  color="white"
-                                  fontWeight="bold"
+                        // Verificar si cualquier resultado tiene puntaje > 0
+                        const anyResultExists = results.some(
+                          (r) =>
+                            (r.resultTeamA ?? 0) > 0 || (r.resultTeamB ?? 0) > 0
+                        );
+
+                        return (
+                          <Flex key={index} align="center">
+                            {/* Mostrar cuadradito verde si hay resultados */}
+                            {resultTeamA > 0 || resultTeamB > 0 ? (
+                              <Box
+                                width="20px"
+                                height="20px"
+                                border="2px solid"
+                                borderColor="green.400"
+                                bg="green.400"
+                                opacity={0.5}
+                                mr={2}
+                              />
+                            ) : (
+                              // Mostrar cuadradito transparente solo si hay algún otro resultado
+                              anyResultExists && (
+                                <Box
+                                  width="20px"
+                                  height="20px"
+                                  border="2px solid"
+                                  borderColor="gray.500"
+                                  bg="transparent"
+                                  opacity={0.5}
                                   mr={2}
-                                ></Text>
-                              )}
-                              {index < results.length - 1 && (
-                                <Text
-                                  color="white"
-                                  fontWeight="bold"
-                                  pl={4}
-                                  pr={4}
-                                >
-                                  VS
-                                </Text>
-                              )}
-                            </Flex>
-                          );
-                        } else {
-                          // Si no hay resultados, mostramos un cuadradito transparente
-                          return (
-                            <Box
-                              key={index}
-                              width="20px"
-                              height="20px"
-                              borderRadius="md"
-                              backgroundColor="transparent"
-                              marginRight="2"
-                            ></Box>
-                          );
-                        }
+                                />
+                              )
+                            )}
+
+                            {/* Mostrar "VS" si hay al menos un resultado */}
+                            {anyResultExists && index < results.length - 1 && (
+                              <Text
+                                color="white"
+                                fontWeight="bold"
+                                pl={4}
+                                pr={4}
+                              >
+                                VS
+                              </Text>
+                            )}
+                          </Flex>
+                        );
                       })}
                     </Flex>
 
