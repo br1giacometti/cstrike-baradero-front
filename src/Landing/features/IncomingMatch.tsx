@@ -49,7 +49,7 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
     if (fixtureList?.length > 0) {
       const firstPendingMatchDay = fixtureList.find((matchDay) =>
         matchDay.matches.some(
-          (match) =>
+          (match: Match) =>
             match.resultTeamA === undefined || match.resultTeamB === undefined
         )
       );

@@ -1,8 +1,7 @@
 import BaseAction from "Base/types/BaseAction";
 import FetchActionTypes from "Base/types/FetchActionTypes";
 import FetchPayload from "Base/types/FetchPayload";
-
-import { MatchDay } from "../types";
+import { MatchDay } from "MatchDay/data/MatchDayRepository";
 
 type ListMatchDayPayload = FetchPayload<MatchDay[]>;
 
