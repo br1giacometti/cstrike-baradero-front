@@ -34,15 +34,7 @@ export interface MatchDay {
   matches: Match[];
 }
 
-interface TeamListProps {
-  handleFixtureRedirect: () => void;
-  tournamentStatus: string;
-}
-
-const IncomingMatch = ({
-  handleFixtureRedirect,
-  tournamentStatus,
-}: TeamListProps) => {
+const IncomingMatch = () => {
   const router = useRouter();
   const { fixtureList, loading, error } = useNextMatchDayService();
   const [selectedMatchDays, setSelectedMatchDays] = useState<MatchDay[]>([]);
@@ -61,18 +53,25 @@ const IncomingMatch = ({
       ) {
         setSelectedMatchDays(fixtureList); // Asumimos que `fixtureList` también contiene estos matchdays
       } else {
-        const firstPendingMatchDay = fixtureList.find((matchDay) =>
+        // Filtramos los matchdays que tienen al menos un partido sin jugar (resultado 0-0)
+        const matchDaysWithPendingMatches = fixtureList.filter((matchDay) =>
           matchDay.matches.some(
-            (match: Match) =>
-              match.resultTeamA === undefined || match.resultTeamB === undefined
+            (match: Match) => match.resultTeamA === 0 && match.resultTeamB === 0
           )
         );
-        setSelectedMatchDays(
-          firstPendingMatchDay ? [firstPendingMatchDay] : []
-        );
+
+        // Si hay matchdays con partidos pendientes, seleccionamos el más antiguo
+        if (matchDaysWithPendingMatches.length > 0) {
+          const oldestMatchDay = matchDaysWithPendingMatches.reduce(
+            (prev, current) => (prev.id < current.id ? prev : current)
+          );
+          setSelectedMatchDays([oldestMatchDay]);
+        } else {
+          setSelectedMatchDays([]); // No hay partidos pendientes
+        }
       }
     }
-  }, [fixtureList, tournamentStatus]);
+  }, [fixtureList]);
 
   const renderSquares = (wins: number) =>
     [0, 1, 2].map((index) => (

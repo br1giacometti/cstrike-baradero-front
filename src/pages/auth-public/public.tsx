@@ -41,7 +41,7 @@ const HomePage = () => {
         <Box maxW="1080px" w="100%" mx="auto" p={4}>
           {" "}
           {/* Ajuste para el ancho y padding */}
-          <IncomingMatch handleFixtureRedirect={handleFixtureRedirect} />
+          <IncomingMatch />
           <ScoreTable />
           <Box mt={10}>
             <TeamsList />
