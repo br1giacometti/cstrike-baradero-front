@@ -84,7 +84,7 @@ const Fixture = () => {
     );
 
     if (matchDay) {
-      const date = matchDay.id; // Cambia esto según la estructura real del objeto matchDay
+      const date = matchDay.name; // Cambia esto según la estructura real del objeto matchDay
       if (!acc[date]) {
         acc[date] = [];
       }
@@ -131,7 +131,7 @@ const Fixture = () => {
             <Box key={date} p={4} borderRadius="md">
               <Text color="rgb(177, 203, 2)" fontWeight="bold" mb={2}>
                 {/* Formato de fecha */}
-                {"Fecha " + date}
+                {date}
               </Text>
               {matches.map((match) => (
                 <Box

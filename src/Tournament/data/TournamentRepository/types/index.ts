@@ -3,6 +3,14 @@ import { Team } from "Team/data/TeamRepository";
 import { CreateTournamentSchema } from "Tournament/schemas/createTournamentSchema";
 import { UpdateTournamentSchema } from "Tournament/schemas/UpdateTournamentSchema";
 
+export enum TournamentStatus {
+  SCHEDULED = "SCHEDULED",
+  ONGOING = "ONGOING",
+  SEMIFINALS = "SEMIFINALS",
+  FINAL = "FINAL",
+  COMPLETED = "COMPLETED",
+}
+
 export interface Tournament {
   name: string;
   createdAt: Date;
@@ -10,6 +18,7 @@ export interface Tournament {
   matches: Match[];
   id: number;
   MatchDay: MatchDay[];
+  status: TournamentStatus;
 }
 
 export interface Fixture {
@@ -19,6 +28,7 @@ export interface Fixture {
   matches: Match[];
   id: number;
   MatchDay: MatchDay[];
+  status: TournamentStatus;
 }
 
 export interface Score {
