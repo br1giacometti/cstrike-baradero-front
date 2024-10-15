@@ -78,6 +78,7 @@ const Fixture = () => {
   };
 
   // Agrupar partidos por fecha
+  // Agrupar partidos por fecha
   const matchesGroupedByDate = matches.reduce((acc, match) => {
     const matchDay = fixtureList[0].MatchDay.find(
       (day) => day.id === match.matchDayId
@@ -93,17 +94,29 @@ const Fixture = () => {
     return acc;
   }, {} as { [key: string]: Match[] });
 
-  // Filtrar partidos únicos por equipo en cada jornada
-  const uniqueMatchesGroupedByDate = Object.entries(matchesGroupedByDate).map(
-    ([date, matches]) => {
+  // Convertir el objeto en un array y ordenar por matchDayId en orden descendente
+  // Convertir el objeto en un array y ordenar por matchDayId en orden ascendente
+  const uniqueMatchesGroupedByDate = Object.entries(matchesGroupedByDate)
+    .map(([date, matches]) => {
       const uniqueMatches = Array.from(
         new Map(
           matches.map((match) => [`${match.teamA.id}-${match.teamB.id}`, match])
         ).values()
       );
       return { date, matches: uniqueMatches };
-    }
-  );
+    })
+    .sort((a, b) => {
+      // Aquí asumo que el date es el nombre del matchDay
+      // Necesitarás extraer el matchDayId desde tu fixtureList o match
+      const matchDayA = fixtureList[0].MatchDay.find(
+        (day) => day.name === a.date
+      );
+      const matchDayB = fixtureList[0].MatchDay.find(
+        (day) => day.name === b.date
+      );
+
+      return (matchDayA?.id || 0) - (matchDayB?.id || 0); // Orden ascendente
+    });
 
   // Verificamos si alguno de los equipos ganó al menos un partido
   const teamAWon = matches.some(
