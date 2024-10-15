@@ -55,6 +55,11 @@ const IncomingMatch = ({
         fixtureList[0].name === "Semifinal 2"
       ) {
         setSelectedMatchDays(fixtureList); // Asumimos que `fixtureList` contiene ambos matchdays
+      } else if (
+        fixtureList[0].name === "Final" ||
+        fixtureList[0].name === "Tercer y Cuarto Puesto"
+      ) {
+        setSelectedMatchDays(fixtureList); // Asumimos que `fixtureList` también contiene estos matchdays
       } else {
         const firstPendingMatchDay = fixtureList.find((matchDay) =>
           matchDay.matches.some(
