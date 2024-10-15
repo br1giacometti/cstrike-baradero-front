@@ -21,10 +21,10 @@ export interface Team {
 export interface Match {
   id: number;
   matchDayId: number;
-  teamA?: Team; // Asegúrate de que Team esté correctamente definido
-  teamB?: Team; // Asegúrate de que Team esté correctamente definido
-  resultTeamA?: number; // Hazlo opcional si puede ser undefined
-  resultTeamB?: number; // Hazlo opcional si puede ser undefined
+  teamA?: Team;
+  teamB?: Team;
+  resultTeamA?: number;
+  resultTeamB?: number;
 }
 
 export interface MatchDay {
@@ -36,30 +36,38 @@ export interface MatchDay {
 
 interface TeamListProps {
   handleFixtureRedirect: () => void;
+  tournamentStatus: string;
 }
 
-const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
+const IncomingMatch = ({
+  handleFixtureRedirect,
+  tournamentStatus,
+}: TeamListProps) => {
   const router = useRouter();
   const { fixtureList, loading, error } = useNextMatchDayService();
-  const [selectedMatchDay, setSelectedMatchDay] = useState<MatchDay | null>(
-    null
-  );
+  const [selectedMatchDays, setSelectedMatchDays] = useState<MatchDay[]>([]);
 
   useEffect(() => {
     if (fixtureList?.length > 0) {
-      const firstPendingMatchDay = fixtureList.find((matchDay) =>
-        matchDay.matches.some(
-          (match: Match) =>
-            match.resultTeamA === undefined || match.resultTeamB === undefined
-        )
-      );
-      setSelectedMatchDay(firstPendingMatchDay || fixtureList[0]);
+      // Comprobamos si el estado del torneo es SEMIFINALS
+      if (
+        fixtureList[0].name === "Semifinal 1" ||
+        fixtureList[0].name === "Semifinal 2"
+      ) {
+        setSelectedMatchDays(fixtureList); // Asumimos que `fixtureList` contiene ambos matchdays
+      } else {
+        const firstPendingMatchDay = fixtureList.find((matchDay) =>
+          matchDay.matches.some(
+            (match: Match) =>
+              match.resultTeamA === undefined || match.resultTeamB === undefined
+          )
+        );
+        setSelectedMatchDays(
+          firstPendingMatchDay ? [firstPendingMatchDay] : []
+        );
+      }
     }
-  }, [fixtureList]);
-
-  const handleGoToHome = () => {
-    router.push("/auth-public/fixture/fixture");
-  };
+  }, [fixtureList, tournamentStatus]);
 
   const renderSquares = (wins: number) =>
     [0, 1, 2].map((index) => (
@@ -79,23 +87,32 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
   const groupedMatches: { [key: string]: { match: Match; wins: number[] } } =
     {};
 
-  selectedMatchDay?.matches.forEach((match) => {
-    const key = `${match.teamA?.id}-${match.teamB?.id}`; // Creando una clave única para los equipos
-    if (!groupedMatches[key]) {
-      groupedMatches[key] = { match, wins: [0, 0] }; // Inicializando el conteo de victorias
-    }
+  selectedMatchDays.forEach((matchDay) => {
+    matchDay.matches.forEach((match) => {
+      const key = `${match.teamA?.id}-${match.teamB?.id}`;
+      if (!groupedMatches[key]) {
+        groupedMatches[key] = { match, wins: [0, 0] };
+      }
 
-    // Usar valores predeterminados para evitar 'undefined'
-    const resultTeamA = match.resultTeamA ?? 0; // Usa 0 si es undefined
-    const resultTeamB = match.resultTeamB ?? 0; // Usa 0 si es undefined
+      const resultTeamA = match.resultTeamA ?? 0;
+      const resultTeamB = match.resultTeamB ?? 0;
 
-    // Contando victorias
-    if (resultTeamA > resultTeamB) {
-      groupedMatches[key].wins[0] += 1; // Equipo A gana
-    } else if (resultTeamB > resultTeamA) {
-      groupedMatches[key].wins[1] += 1; // Equipo B gana
-    }
+      if (resultTeamA > resultTeamB) {
+        groupedMatches[key].wins[0] += 1; // Equipo A gana
+      } else if (resultTeamB > resultTeamA) {
+        groupedMatches[key].wins[1] += 1; // Equipo B gana
+      }
+    });
   });
+
+  const getMatchDayName = (matchDayId: number): string => {
+    const matchDay = selectedMatchDays.find((day) => day.id === matchDayId);
+    return matchDay ? matchDay.name : "Cargando...";
+  };
+
+  const handleGoToHome = () => {
+    router.push("/auth-public/fixture/fixture");
+  };
 
   return (
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
@@ -104,7 +121,9 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
           Próximos Partidos
         </Heading>
         <Text fontSize="lg" color="rgb(177, 203, 2)">
-          {selectedMatchDay ? selectedMatchDay.name : "Cargando..."}
+          {selectedMatchDays.length > 0
+            ? selectedMatchDays.map((day) => day.name).join(", ")
+            : "Cargando..."}
         </Text>
       </Flex>
 
@@ -138,7 +157,6 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                     </Text>
                   </Tooltip>
                   <Flex ml={4}>{renderSquares(wins[0])}</Flex>{" "}
-                  {/* Ganadas por A */}
                 </Flex>
 
                 <Text color="white" fontWeight="bold">
@@ -147,7 +165,6 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
 
                 <Flex align="center">
                   <Flex mr={4}>{renderSquares(wins[1])}</Flex>{" "}
-                  {/* Ganadas por B */}
                   <Tooltip
                     label={match.teamB?.players
                       .map((player) => player.name)
@@ -161,6 +178,10 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                   </Tooltip>
                 </Flex>
               </Flex>
+              <Text color="gray.400" fontSize="sm">
+                {getMatchDayName(match.matchDayId)}{" "}
+                {/* Muestra el nombre del matchDay */}
+              </Text>
             </Box>
           ))
         ) : (
