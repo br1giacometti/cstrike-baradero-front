@@ -7,6 +7,7 @@ import deleteTournament from "./services/deleteTournament";
 import getTournamentById from "./services/getTournamentById";
 import getAllFixture from "./services/getAllFixture";
 import getAllScore from "./services/getScoreFixture";
+import getNextMatchDay from "./services/getNextMatchDay";
 
 // Repositorio que permite crear uno con o sin token
 const createTournamentRepository = (
@@ -23,6 +24,7 @@ const createTournamentRepository = (
     getAllTournament,
     getAllFixture: () => getAllFixture(),
     getAllScore: () => getAllScore(),
+    getNextMatchDay: () => getNextMatchDay(),
     deleteTournament,
     getTournamentById,
     updateTournament,

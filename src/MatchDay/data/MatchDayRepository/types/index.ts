@@ -7,6 +7,7 @@ export interface MatchDay {
   name: string;
   matches: Match[];
   id: number;
+  tournamentId: number;
 }
 
 export interface Match {

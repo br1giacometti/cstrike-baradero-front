@@ -46,6 +46,7 @@ export interface TournamentRepository {
   getAllScore: () => Promise<Score[]>;
   deleteTournament: (tournamentId: number) => Promise<boolean>;
   getTournamentById: (tournamentId: number) => Promise<Tournament>;
+  getNextMatchDay: () => Promise<MatchDay[]>;
   updateTournament: (
     body: UpdateTournamentSchema,
     tournamentId: number

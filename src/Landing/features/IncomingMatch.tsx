@@ -1,10 +1,8 @@
-import { EditIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Flex,
   Heading,
-  Image,
   Stack,
   Text,
   Tooltip,
@@ -12,13 +10,11 @@ import {
 import { useRouter } from "next/router";
 import { Player } from "Player/data/PlayerRepository";
 import { useEffect, useState } from "react";
-import useAllFixtureService from "Tournament/data/TournamentRepository/hooks/useAllFixtureService";
+import useNextMatchDayService from "Tournament/data/TournamentRepository/hooks/useNextMatchDayService";
 
-// Tipos para equipos y partidos
 interface Team {
   id: number;
   name: string;
-  logoUrl?: string;
   players: Player[];
 }
 
@@ -27,8 +23,15 @@ interface Match {
   matchDayId: number;
   teamA: Team;
   teamB: Team;
-  resultTeamA: number | undefined; // Permitir undefined
-  resultTeamB: number | undefined; // Permitir undefined
+  resultTeamA: number;
+  resultTeamB: number;
+}
+
+interface MatchDay {
+  id: number;
+  name: string;
+  tournamentId: number;
+  matches: Match[];
 }
 
 interface TeamListProps {
@@ -37,67 +40,57 @@ interface TeamListProps {
 
 const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
   const router = useRouter();
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [currentRoundIndex, setCurrentRoundIndex] = useState<number>(0);
-  const { fixtureList, loading, error } = useAllFixtureService();
+  const { fixtureList, loading, error } = useNextMatchDayService();
+  const [selectedMatchDay, setSelectedMatchDay] = useState<MatchDay | null>(
+    null
+  );
 
   useEffect(() => {
-    if (fixtureList && fixtureList.length > 0) {
-      const matchesFromApi: Match[] = fixtureList[0].matches
-        .filter((match) => match.teamA && match.teamB)
-        .map((match) => ({
-          id: match.id,
-          matchDayId: match.matchDayId,
-          teamA: match.teamA!,
-          teamB: match.teamB!,
-          resultTeamA: match.resultTeamA,
-          resultTeamB: match.resultTeamB,
-        }));
-      setMatches(matchesFromApi);
+    if (fixtureList?.length > 0) {
+      const firstPendingMatchDay = fixtureList.find((matchDay: MatchDay) =>
+        matchDay.matches.some(
+          (match) =>
+            match.resultTeamA === undefined || match.resultTeamB === undefined
+        )
+      );
+      setSelectedMatchDay(firstPendingMatchDay || fixtureList[0]);
     }
   }, [fixtureList]);
 
-  useEffect(() => {
-    if (fixtureList.length > 0) {
-      const currentMatchDay = fixtureList[0].MatchDay[currentRoundIndex];
-
-      if (currentMatchDay) {
-        const matchesForCurrentRound = matches.filter(
-          (match) => match.matchDayId === currentMatchDay.id
-        );
-
-        const allMatchesFinished = matchesForCurrentRound.every(
-          (match) => match.resultTeamA !== 0 || match.resultTeamB !== 0
-        );
-
-        if (allMatchesFinished) {
-          setCurrentRoundIndex((prevIndex) =>
-            Math.min(prevIndex + 1, fixtureList[0].MatchDay.length - 1)
-          );
-        }
-      }
-    }
-  }, [matches, fixtureList, currentRoundIndex]);
-
   const handleGoToHome = () => {
-    router.push("/auth-public/fixture/fixture"); // Redirige a la ruta deseada
+    router.push("/auth-public/fixture/fixture");
   };
 
-  // Filtrando partidos por ronda actual
-  const matchesByRound = matches.filter(
-    (match) =>
-      fixtureList[0].MatchDay[currentRoundIndex]?.id === match.matchDayId
-  );
+  const renderSquares = (wins: number) =>
+    [0, 1, 2].map((index) => (
+      <Box
+        key={index}
+        width="20px"
+        height="20px"
+        border="2px solid"
+        borderColor={index < wins ? "green.400" : "gray.500"}
+        bg={index < wins ? "green.400" : "transparent"}
+        opacity={index < wins ? 0.5 : 1}
+        mr={2}
+      />
+    ));
 
-  // Agrupando partidos por equipos
-  const matchesGrouped = matchesByRound.reduce((acc, match) => {
-    const key = `${match.teamA.name}-${match.teamB.name}`;
-    if (!acc[key]) {
-      acc[key] = [];
+  // Agrupando partidos
+  const groupedMatches: { [key: string]: { match: Match; wins: number[] } } =
+    {};
+
+  selectedMatchDay?.matches.forEach((match) => {
+    const key = `${match.teamA.id}-${match.teamB.id}`; // Creando una clave única para los equipos
+    if (!groupedMatches[key]) {
+      groupedMatches[key] = { match, wins: [0, 0] }; // Inicializando el conteo de victorias
     }
-    acc[key].push(match);
-    return acc;
-  }, {} as Record<string, Match[]>);
+    // Contando victorias
+    if (match.resultTeamA > (match.resultTeamB || -0)) {
+      groupedMatches[key].wins[0] += 1; // Equipo A gana
+    } else if (match.resultTeamB > (match.resultTeamA || 0)) {
+      groupedMatches[key].wins[1] += 1; // Equipo B gana
+    }
+  });
 
   return (
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
@@ -106,184 +99,73 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
           Próximos Partidos
         </Heading>
         <Text fontSize="lg" color="rgb(177, 203, 2)">
-          {fixtureList.length > 0
-            ? fixtureList[0].MatchDay[currentRoundIndex]?.name
-            : "Cargando..."}
+          {selectedMatchDay ? selectedMatchDay.name : "Cargando..."}
         </Text>
       </Flex>
 
       <Stack spacing={4}>
-        {Object.entries(matchesGrouped).length ? (
-          Object.entries(matchesGrouped).map(([key, matches]) => {
-            // Verificamos si alguno de los equipos ganó al menos un partido
-            const teamAWon = matches.some(
-              (match) =>
-                match.resultTeamA !== undefined &&
-                match.resultTeamA > (match.resultTeamB || -0)
-            );
-            const teamBWon = matches.some(
-              (match) =>
-                match.resultTeamB !== undefined &&
-                match.resultTeamB > (match.resultTeamA || -0)
-            );
-
-            const navigateToMatchList = (
-              matchDayId: number,
-              teamId: number
-            ) => {
-              router.push(`/auth-public/filter/${matchDayId}/${teamId}`);
-            };
-            return (
-              <Box
-                key={key}
-                p={4}
-                bg="gray.700"
-                borderRadius="md"
-                cursor="pointer" // Cambiar el cursor para indicar que es clickeable
-                _hover={{ bg: "gray.600" }} // Cambiar el fondo al pasar el mouse
-              >
-                <Flex
-                  align="center"
-                  justify="space-between"
-                  onClick={() =>
-                    navigateToMatchList(
-                      matches[0].matchDayId,
-                      matches[0].teamA.id
-                    )
-                  }
-                >
-                  <Flex align="center">
-                    {matches[0].teamA.logoUrl ? (
-                      <Image
-                        src={matches[0].teamA.logoUrl}
-                        alt={matches[0].teamA.name}
-                        boxSize="40px"
-                        borderRadius="md"
-                        mr={2}
-                      />
-                    ) : (
-                      <Box
-                        bg="gray.500"
-                        boxSize="40px"
-                        borderRadius="md"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        mr={2}
-                      ></Box>
-                    )}
-                    <Tooltip
-                      label={matches[0].teamA.players
-                        .map((player) => player.name)
-                        .join(", ")}
-                      placement="top"
-                      aria-label={`Jugadores de ${matches[0].teamA.name}`}
-                    >
-                      <Text fontSize="lg" color="white" fontWeight="bold">
-                        {matches[0].teamA.name}
-                      </Text>
-                    </Tooltip>
-                  </Flex>
-
-                  {/* Cuadrados de resultado */}
-                  <Flex align="center" mx={4}>
-                    {[0, 1, 2].map((index) => {
-                      // Verificamos si el equipo A ganó en esta posición
-                      const teamAWonMatch =
-                        teamAWon &&
-                        index <
-                          matches.filter(
-                            (m) => (m.resultTeamA || 0) > (m.resultTeamB || 0)
-                          ).length;
-
-                      return (
-                        <Box
-                          key={index}
-                          width="20px"
-                          height="20px"
-                          border="2px solid"
-                          borderColor={teamAWonMatch ? "green.400" : "gray.500"}
-                          mr={2}
-                          backgroundColor={
-                            teamAWonMatch ? "green.400" : "transparent"
-                          } // Rellenar de verde si ganó
-                          opacity={teamAWonMatch ? 0.5 : 1} // Ajustar opacidad
-                        />
-                      );
-                    })}
-
-                    <Text color="white" fontWeight="bold">
-                      VS
+        {Object.values(groupedMatches).length ? (
+          Object.values(groupedMatches).map(({ match, wins }) => (
+            <Box
+              key={match.id}
+              p={4}
+              bg="gray.700"
+              borderRadius="md"
+              cursor="pointer"
+              _hover={{ bg: "gray.600" }}
+              onClick={() =>
+                router.push(
+                  `/auth-public/filter/${match.matchDayId}/${match.teamA.id}`
+                )
+              }
+            >
+              <Flex align="center" justify="space-between">
+                <Flex align="center">
+                  <Tooltip
+                    label={match.teamA.players
+                      .map((player) => player.name)
+                      .join(", ")}
+                    placement="top"
+                    aria-label={`Jugadores de ${match.teamA.name}`}
+                  >
+                    <Text fontSize="lg" color="white" fontWeight="bold">
+                      {match.teamA.name}
                     </Text>
-
-                    {[0, 1, 2].map((index) => {
-                      // Verificamos si el equipo B ganó en esta posición
-                      const teamBWonMatch =
-                        teamBWon &&
-                        index <
-                          matches.filter(
-                            (m) => (m.resultTeamB || 0) > (m.resultTeamA || 0)
-                          ).length;
-
-                      return (
-                        <Box
-                          key={index}
-                          width="20px"
-                          height="20px"
-                          border="2px solid"
-                          borderColor={teamBWonMatch ? "green.400" : "gray.500"}
-                          ml={2}
-                          backgroundColor={
-                            teamBWonMatch ? "green.400" : "transparent"
-                          } // Rellenar de verde si ganó
-                          opacity={teamBWonMatch ? 0.5 : 1} // Ajustar opacidad
-                        />
-                      );
-                    })}
-                  </Flex>
-
-                  <Flex align="center">
-                    <Tooltip
-                      label={matches[0].teamB.players
-                        .map((player) => player.name)
-                        .join(", ")}
-                      placement="top"
-                      aria-label={`Jugadores de ${matches[0].teamB.name}`}
-                    >
-                      <Text fontSize="lg" color="white" fontWeight="bold">
-                        {matches[0].teamB.name}
-                      </Text>
-                    </Tooltip>
-                    {matches[0].teamB.logoUrl ? (
-                      <Image
-                        src={matches[0].teamB.logoUrl}
-                        alt={matches[0].teamB.name}
-                        boxSize="40px"
-                        borderRadius="md"
-                        ml={2}
-                      />
-                    ) : (
-                      <Box
-                        bg="gray.500"
-                        boxSize="40px"
-                        borderRadius="md"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        ml={2}
-                      ></Box>
-                    )}
-                  </Flex>
+                  </Tooltip>
+                  <Flex ml={4}>{renderSquares(wins[0])}</Flex>{" "}
+                  {/* Ganadas por A */}
                 </Flex>
-              </Box>
-            );
-          })
+
+                <Text color="white" fontWeight="bold">
+                  VS
+                </Text>
+
+                <Flex align="center">
+                  <Flex mr={4}>{renderSquares(wins[1])}</Flex>{" "}
+                  {/* Ganadas por B */}
+                  <Tooltip
+                    label={match.teamB.players
+                      .map((player) => player.name)
+                      .join(", ")}
+                    placement="top"
+                    aria-label={`Jugadores de ${match.teamB.name}`}
+                  >
+                    <Text fontSize="lg" color="white" fontWeight="bold">
+                      {match.teamB.name}
+                    </Text>
+                  </Tooltip>
+                </Flex>
+              </Flex>
+            </Box>
+          ))
         ) : (
           <Text color="white">No hay partidos programados.</Text>
         )}
       </Stack>
+
       {loading && <Text color="white">Cargando...</Text>}
       {error && <Text color="red.500">Error al cargar partidos.</Text>}
+
       <Button
         mt={6}
         bg="rgb(177, 203, 2)"

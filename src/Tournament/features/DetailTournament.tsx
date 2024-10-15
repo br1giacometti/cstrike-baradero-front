@@ -75,6 +75,17 @@ const DetailTournament = ({
     navigateToMatchDay();
   };
 
+  const handleAdvanceStage = () => {
+    // Aquí puedes implementar la lógica para avanzar de etapa
+    toast({
+      title: "Etapa Avanzada.",
+      description: "Has avanzado a la siguiente etapa del torneo.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
   return (
     <Flex direction="column" maxW="600px" mx="auto" mt={8}>
       <Heading mb={6}>Detalles del Torneo</Heading>
@@ -85,6 +96,18 @@ const DetailTournament = ({
           <Text fontWeight="bold">Nombre del Torneo:</Text>
           <Text>{defaultValues.name}</Text>
         </Box>
+
+        <Box>
+          <Text fontWeight="bold">Etapa del Torneo:</Text>
+          <Text>{defaultValues.status}</Text>
+        </Box>
+
+        {/* Botón "Avanzar de Etapa" solo si el estado no es "FINAL" */}
+        {defaultValues.status !== "FINAL" && (
+          <Button mt={4} colorScheme="orange" onClick={handleAdvanceStage}>
+            Avanzar de Etapa
+          </Button>
+        )}
 
         {/* Equipos Asociados */}
         <Box>
