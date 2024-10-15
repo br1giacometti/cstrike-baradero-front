@@ -122,7 +122,7 @@ const EditMatch = ({ defaultValues }: EditMatchProps) => {
   );
 
   const [playersB, setPlayersB] = useState<Player[]>(
-    teamA?.players.map((player) => ({
+    teamB?.players.map((player) => ({
       id: player.id,
       name: player.name,
       kills: 0,
