@@ -12,22 +12,22 @@ import { Player } from "Player/data/PlayerRepository";
 import { useEffect, useState } from "react";
 import useNextMatchDayService from "Tournament/data/TournamentRepository/hooks/useNextMatchDayService";
 
-interface Team {
+export interface Team {
   id: number;
   name: string;
   players: Player[];
 }
 
-interface Match {
+export interface Match {
   id: number;
   matchDayId: number;
-  teamA: Team;
-  teamB: Team;
-  resultTeamA: number;
-  resultTeamB: number;
+  teamA?: Team; // Asegúrate de que Team esté correctamente definido
+  teamB?: Team; // Asegúrate de que Team esté correctamente definido
+  resultTeamA?: number; // Hazlo opcional si puede ser undefined
+  resultTeamB?: number; // Hazlo opcional si puede ser undefined
 }
 
-interface MatchDay {
+export interface MatchDay {
   id: number;
   name: string;
   tournamentId: number;
@@ -47,7 +47,7 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
 
   useEffect(() => {
     if (fixtureList?.length > 0) {
-      const firstPendingMatchDay = fixtureList.find((matchDay: MatchDay) =>
+      const firstPendingMatchDay = fixtureList.find((matchDay) =>
         matchDay.matches.some(
           (match) =>
             match.resultTeamA === undefined || match.resultTeamB === undefined
@@ -80,14 +80,19 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
     {};
 
   selectedMatchDay?.matches.forEach((match) => {
-    const key = `${match.teamA.id}-${match.teamB.id}`; // Creando una clave única para los equipos
+    const key = `${match.teamA?.id}-${match.teamB?.id}`; // Creando una clave única para los equipos
     if (!groupedMatches[key]) {
       groupedMatches[key] = { match, wins: [0, 0] }; // Inicializando el conteo de victorias
     }
+
+    // Usar valores predeterminados para evitar 'undefined'
+    const resultTeamA = match.resultTeamA ?? 0; // Usa 0 si es undefined
+    const resultTeamB = match.resultTeamB ?? 0; // Usa 0 si es undefined
+
     // Contando victorias
-    if (match.resultTeamA > (match.resultTeamB || -0)) {
+    if (resultTeamA > resultTeamB) {
       groupedMatches[key].wins[0] += 1; // Equipo A gana
-    } else if (match.resultTeamB > (match.resultTeamA || 0)) {
+    } else if (resultTeamB > resultTeamA) {
       groupedMatches[key].wins[1] += 1; // Equipo B gana
     }
   });
@@ -115,21 +120,21 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
               _hover={{ bg: "gray.600" }}
               onClick={() =>
                 router.push(
-                  `/auth-public/filter/${match.matchDayId}/${match.teamA.id}`
+                  `/auth-public/filter/${match.matchDayId}/${match.teamA?.id}`
                 )
               }
             >
               <Flex align="center" justify="space-between">
                 <Flex align="center">
                   <Tooltip
-                    label={match.teamA.players
+                    label={match.teamA?.players
                       .map((player) => player.name)
                       .join(", ")}
                     placement="top"
-                    aria-label={`Jugadores de ${match.teamA.name}`}
+                    aria-label={`Jugadores de ${match.teamA?.name}`}
                   >
                     <Text fontSize="lg" color="white" fontWeight="bold">
-                      {match.teamA.name}
+                      {match.teamA?.name}
                     </Text>
                   </Tooltip>
                   <Flex ml={4}>{renderSquares(wins[0])}</Flex>{" "}
@@ -144,14 +149,14 @@ const IncomingMatch = ({ handleFixtureRedirect }: TeamListProps) => {
                   <Flex mr={4}>{renderSquares(wins[1])}</Flex>{" "}
                   {/* Ganadas por B */}
                   <Tooltip
-                    label={match.teamB.players
+                    label={match.teamB?.players
                       .map((player) => player.name)
                       .join(", ")}
                     placement="top"
-                    aria-label={`Jugadores de ${match.teamB.name}`}
+                    aria-label={`Jugadores de ${match.teamB?.name}`}
                   >
                     <Text fontSize="lg" color="white" fontWeight="bold">
-                      {match.teamB.name}
+                      {match.teamB?.name}
                     </Text>
                   </Tooltip>
                 </Flex>

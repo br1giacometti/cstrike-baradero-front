@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import listFixtureReducer, {
   initialState,
-} from "../reducer/listFixtureReducer";
+} from "../reducer/listNextMatchDayReducer";
 import createTournamentRepository from "../createTournamentRepository";
 import FetchActionTypes from "Base/types/FetchActionTypes";
 import listMatchDayReducer from "../reducer/listNextMatchDayReducer";
