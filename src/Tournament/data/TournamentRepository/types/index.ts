@@ -4,8 +4,7 @@ import { CreateTournamentSchema } from "Tournament/schemas/createTournamentSchem
 import { UpdateTournamentSchema } from "Tournament/schemas/UpdateTournamentSchema";
 
 export enum TournamentStatus {
-  SCHEDULED = "SCHEDULED",
-  ONGOING = "ONGOING",
+  GROUP_STAGE = "GROUP_STAGE",
   SEMIFINALS = "SEMIFINALS",
   FINAL = "FINAL",
   COMPLETED = "COMPLETED",
@@ -48,6 +47,10 @@ export interface TournamentRepository {
   getTournamentById: (tournamentId: number) => Promise<Tournament>;
   getNextMatchDay: () => Promise<MatchDay[]>;
   updateTournament: (
+    body: UpdateTournamentSchema,
+    tournamentId: number
+  ) => Promise<Tournament>;
+  updateTournamentStage: (
     body: UpdateTournamentSchema,
     tournamentId: number
   ) => Promise<Tournament>;

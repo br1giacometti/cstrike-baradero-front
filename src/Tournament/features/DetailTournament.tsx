@@ -16,7 +16,11 @@ import { Match, MatchDay } from "MatchDay/data/MatchDayRepository";
 import { useRouter } from "next/router";
 import { Team } from "Team/data/TeamRepository";
 import { Tournament } from "Tournament/data/TournamentRepository";
-import { useCallback } from "react"; // Asegúrate de importar useCallback
+import { useCallback, useEffect, useState } from "react"; // Asegúrate de importar useCallback
+import { UpdateTournamentSchema } from "Tournament/schemas/UpdateTournamentSchema";
+import useUpdateStageTournamentService from "Tournament/data/TournamentRepository/hooks/useUpdateStageTournamentService";
+import useUpdateTournamentStageStates from "Tournament/hooks/useUpdateTournamentStageStates";
+import ConfirmCreateModal from "Tournament/components/ConfirmCreateDialog";
 
 interface DetailTournamentProps {
   defaultValues: Tournament;
@@ -29,6 +33,10 @@ const DetailTournament = ({
 }: DetailTournamentProps) => {
   const router = useRouter();
   const toast = useToast();
+
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la apertura del modal
 
   // Función para navegar de regreso a la lista de torneos
   const handleGoBack = () => router.push("/tournament");
@@ -74,16 +82,42 @@ const DetailTournament = ({
     event.preventDefault(); // Evita el comportamiento por defecto si es necesario
     navigateToMatchDay();
   };
+  const { error, successFetch, failureFetch } =
+    useUpdateTournamentStageStates();
 
-  const handleAdvanceStage = () => {
-    // Aquí puedes implementar la lógica para avanzar de etapa
-    toast({
-      title: "Etapa Avanzada.",
-      description: "Has avanzado a la siguiente etapa del torneo.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+  const { updateTournamentStage } = useUpdateStageTournamentService();
+
+  const handleUpdateTournament = async () => {
+    // Verifica si ya está en proceso de actualización
+    if (isUpdating) return;
+
+    setIsUpdating(true); // Desactiva el botón
+    try {
+      // Determina el nuevo estado basado en el estado actual del torneo
+      const newStatus =
+        defaultValues.status === "GROUP_STAGE" ? "SEMIFINALS" : "FINAL";
+
+      const data: UpdateTournamentSchema = {
+        // Pasa el nuevo estado para la actualización
+        status: newStatus,
+      };
+
+      const tournamentUpdated = await updateTournamentStage(
+        data,
+        defaultValues.id
+      );
+      successFetch(tournamentUpdated);
+      toast({
+        status: "success",
+        description: `${tournamentUpdated.name} se actualizó`,
+      });
+      router.push("/tournament");
+    } catch (axiosError) {
+      // Manejo de errores
+    } finally {
+      setIsUpdating(false); // Reactiva el botón
+      setIsModalOpen(false); // Cierra el modal
+    }
   };
 
   return (
@@ -103,11 +137,28 @@ const DetailTournament = ({
         </Box>
 
         {/* Botón "Avanzar de Etapa" solo si el estado no es "FINAL" */}
+        {/* Botón "Avanzar de Etapa" solo si el estado no es "FINAL" */}
         {defaultValues.status !== "FINAL" && (
-          <Button mt={4} colorScheme="orange" onClick={handleAdvanceStage}>
+          <Button
+            mt={4}
+            colorScheme="orange"
+            onClick={() => setIsModalOpen(true)} // Abre el modal
+          >
             Avanzar de Etapa
           </Button>
         )}
+
+        {/* Modal de confirmación */}
+        <ConfirmCreateModal
+          title="Confirmar Avance de Etapa"
+          description={`¿Estás seguro de que deseas avanzar a la etapa ${
+            defaultValues.status === "GROUP_STAGE" ? "Semifinales" : "Finales"
+          }?`} // Ajusta el texto
+          isLoading={isUpdating}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)} // Cierra el modal
+          onConfirm={handleUpdateTournament} // Maneja la confirmación
+        />
 
         {/* Equipos Asociados */}
         <Box>
