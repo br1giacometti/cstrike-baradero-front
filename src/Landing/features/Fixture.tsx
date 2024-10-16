@@ -104,7 +104,7 @@ const Fixture = () => {
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
       <Flex justify="space-between" align="center" mb={4}>
         <Heading as="h2" size="lg" color="rgb(177, 203, 2)">
-          Próximos Partidos
+          Todos los partidos
         </Heading>
       </Flex>
 
