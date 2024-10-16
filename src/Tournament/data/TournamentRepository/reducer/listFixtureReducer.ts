@@ -3,6 +3,7 @@ import FetchActionTypes from "Base/types/FetchActionTypes";
 import FetchPayload from "Base/types/FetchPayload";
 
 import { Fixture } from "../types";
+import { MatchDay } from "MatchDay/data/MatchDayRepository";
 
 type ListFixturePayload = FetchPayload<Fixture[]>;
 
@@ -11,7 +12,7 @@ export type ListFixtureActions = BaseAction<ListFixturePayload>;
 type ListFixtureAction = ListFixtureActions[keyof ListFixtureActions];
 
 interface ListFixtureState {
-  data: Fixture[];
+  data: MatchDay[];
   loading: boolean;
   error?: string;
 }

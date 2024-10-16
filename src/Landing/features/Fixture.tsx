@@ -1,271 +1,189 @@
-import { EditIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
-  Collapse,
   Flex,
-  Heading,
-  Image,
-  Stack,
   Text,
+  Stack,
   Tooltip,
+  Heading,
+  Button,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { Player } from "Player/data/PlayerRepository";
 import { useEffect, useState } from "react";
 import useAllFixtureService from "Tournament/data/TournamentRepository/hooks/useAllFixtureService";
 
-// Tipos para equipos, jugadores y partidos
-interface Player {
+export interface Team {
   id: number;
   name: string;
+  players: Player[];
 }
 
-interface Team {
-  id: number; // Este campo debe ser un número
-  name: string; // Este campo debe ser un string, no opcional
-  logoUrl?: string;
-  players: Player[]; // Siempre debe haber un arreglo de jugadores
-}
-
-interface Match {
+export interface Match {
   id: number;
   matchDayId: number;
-  teamA: Team;
-  teamB: Team;
-  resultTeamA: number | undefined;
-  resultTeamB: number | undefined;
+  teamA?: Team;
+  teamB?: Team;
+  resultTeamA?: number;
+  resultTeamB?: number;
 }
 
-// ... (importaciones y definiciones de tipos)
+export interface MatchDay {
+  id: number;
+  name: string;
+  tournamentId: number;
+  matches: Match[];
+}
 
 const Fixture = () => {
   const router = useRouter();
-  const [matches, setMatches] = useState<Match[]>([]);
   const { fixtureList, loading, error } = useAllFixtureService();
+  const [selectedMatchDays, setSelectedMatchDays] = useState<MatchDay[]>([]);
 
-  // useEffect
   useEffect(() => {
-    if (fixtureList && fixtureList.length > 0) {
-      const matchesFromApi: Match[] = fixtureList[0].matches
-        .filter((match) => match.teamA && match.teamB) // Filtrar partidos válidos
-        .map((match) => ({
-          id: match.id,
-          matchDayId: match.matchDayId,
-          teamA: {
-            id: match.teamA?.id ?? -1,
-            name: match.teamA?.name ?? "",
-            players: match.teamA?.players || [],
-          },
-          teamB: {
-            id: match.teamB?.id ?? -1,
-            name: match.teamB?.name ?? "",
-            players: match.teamB?.players || [],
-          },
-          resultTeamA: match.resultTeamA,
-          resultTeamB: match.resultTeamB,
-        }))
-        .sort((a, b) => a.matchDayId - b.matchDayId); // Ordenar por matchDayId ascendente
-
-      setMatches(matchesFromApi);
+    console.log("fixtureList:", fixtureList); // Verificar qué contiene fixtureList
+    if (fixtureList?.length > 0) {
+      setSelectedMatchDays(fixtureList);
+    } else {
+      setSelectedMatchDays([]);
     }
   }, [fixtureList]);
 
-  // Agrupar partidos por fecha y por enfrentamiento
-  const matchesGroupedByDate = matches.reduce((acc, match) => {
-    const matchDay = fixtureList[0].MatchDay.find(
-      (day) => day.id === match.matchDayId
-    );
+  console.log("hola");
 
-    if (matchDay) {
-      const date = matchDay.name;
-      if (!acc[date]) {
-        acc[date] = {};
+  const renderSquares = (wins: number) =>
+    [0, 1, 2].map((index) => (
+      <Box
+        key={index}
+        width="20px"
+        height="20px"
+        border="2px solid"
+        borderColor={index < wins ? "green.400" : "gray.500"}
+        bg={index < wins ? "green.400" : "transparent"}
+        opacity={index < wins ? 0.5 : 1}
+        mr={2}
+      />
+    ));
+
+  const groupedMatches: { [key: string]: { match: Match; wins: number[] } } =
+    {};
+
+  selectedMatchDays.forEach((matchDay) => {
+    matchDay.matches.forEach((match) => {
+      // Cambiamos la clave para incluir matchDayId
+      const key = `${matchDay.id}-${match.teamA?.id}-${match.teamB?.id}`;
+
+      if (!groupedMatches[key]) {
+        groupedMatches[key] = { match, wins: [0, 0] };
       }
 
-      const matchKey = `${match.teamA.id}-${match.teamB.id}`;
-      if (!acc[date][matchKey]) {
-        acc[date][matchKey] = {
-          teamA: match.teamA,
-          teamB: match.teamB,
-          results: [],
-        };
+      // Se registran los resultados sin importar si son cero
+      const resultTeamA = match.resultTeamA ?? 0;
+      const resultTeamB = match.resultTeamB ?? 0;
+
+      // Si hay resultados, se cuentan las victorias
+      if (resultTeamA > resultTeamB) {
+        groupedMatches[key].wins[0] += 1; // Equipo A gana
+      } else if (resultTeamB > resultTeamA) {
+        groupedMatches[key].wins[1] += 1; // Equipo B gana
       }
-      acc[date][matchKey].results.push({
-        resultTeamA: match.resultTeamA,
-        resultTeamB: match.resultTeamB,
-      });
-    }
-    return acc;
-  }, {} as { [key: string]: { [key: string]: { teamA: Team; teamB: Team; results: { resultTeamA: number | undefined; resultTeamB: number | undefined }[] } } });
 
-  // Convertir el objeto agrupado a una lista
-  const uniqueMatchesGroupedByDate = Object.entries(matchesGroupedByDate).map(
-    ([date, matchEntries]) => ({
-      date,
-      matches: Object.values(matchEntries),
-    })
-  );
+      // Se mantienen los partidos con resultados iguales
+    });
+  });
 
-  const handleGoToHome = () => {
-    router.push("/auth-public/public"); // Redirige a la ruta deseada
+  const getMatchDayName = (matchDayId: number): string => {
+    const matchDay = selectedMatchDays.find((day) => day.id === matchDayId);
+    return matchDay ? matchDay.name : "Cargando...";
   };
 
-  const navigateToMatchList = (matchDayId: number, teamId: number) => {
-    router.push(`/auth-public/filter/${matchDayId}/${teamId}`);
+  const handleGoToHome = () => {
+    router.push("/auth-public/fixture/fixture");
   };
 
   return (
     <Box mt={10} p={6} bg="gray.800" borderRadius="md" shadow="lg" w="100%">
       <Flex justify="space-between" align="center" mb={4}>
         <Heading as="h2" size="lg" color="rgb(177, 203, 2)">
-          Fixture Completo
+          Próximos Partidos
         </Heading>
       </Flex>
 
       <Stack spacing={4}>
-        {uniqueMatchesGroupedByDate.length ? (
-          uniqueMatchesGroupedByDate.map(({ date, matches }) => (
-            <Box key={date} p={4} borderRadius="md">
-              <Text color="rgb(177, 203, 2)" fontWeight="bold" mb={2}>
-                {date}
+        {Object.values(groupedMatches).length ? (
+          Object.values(groupedMatches).map(({ match, wins }) => (
+            <Box
+              key={match.id}
+              p={4}
+              bg="gray.700"
+              borderRadius="md"
+              cursor="pointer"
+              _hover={{ bg: "gray.600" }}
+              onClick={() =>
+                router.push(
+                  `/auth-public/filter/${match.matchDayId}/${match.teamA?.id}`
+                )
+              }
+            >
+              <Flex align="center" justify="space-between">
+                <Flex align="center">
+                  <Tooltip
+                    label={match.teamA?.players
+                      .map((player) => player.name)
+                      .join(", ")}
+                    placement="top"
+                    aria-label={`Jugadores de ${match.teamA?.name}`}
+                  >
+                    <Text fontSize="lg" color="white" fontWeight="bold">
+                      {match.teamA?.name}
+                    </Text>
+                  </Tooltip>
+                  <Flex ml={4}>{renderSquares(wins[0])}</Flex>
+                </Flex>
+
+                <Text color="white" fontWeight="bold">
+                  VS
+                </Text>
+
+                <Flex align="center">
+                  <Flex mr={4}>{renderSquares(wins[1])}</Flex>
+                  <Tooltip
+                    label={match.teamB?.players
+                      .map((player) => player.name)
+                      .join(", ")}
+                    placement="top"
+                    aria-label={`Jugadores de ${match.teamB?.name}`}
+                  >
+                    <Text fontSize="lg" color="white" fontWeight="bold">
+                      {match.teamB?.name}
+                    </Text>
+                  </Tooltip>
+                </Flex>
+              </Flex>
+              <Text color="gray.400" fontSize="sm">
+                {getMatchDayName(match.matchDayId)}{" "}
+                {/* Muestra el nombre del matchDay */}
               </Text>
-              {matches.map(({ teamA, teamB, results }) => (
-                <Box
-                  key={`${teamA.id}-${teamB.id}`}
-                  p={4}
-                  bg="gray.700"
-                  borderRadius="md"
-                  cursor="pointer"
-                  _hover={{ bg: "gray.600" }}
-                  mb={2}
-                  onClick={() => navigateToMatchList(teamA.id, teamB.id)}
-                >
-                  <Flex align="center" justify="space-between">
-                    <Flex align="center">
-                      {teamA.logoUrl ? (
-                        <Image
-                          src={teamA.logoUrl}
-                          alt={teamA.name}
-                          boxSize="40px"
-                          borderRadius="md"
-                          mr={2}
-                        />
-                      ) : (
-                        <Box
-                          bg="gray.500"
-                          boxSize="40px"
-                          borderRadius="md"
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          mr={2}
-                        />
-                      )}
-                      <Text
-                        fontSize="lg"
-                        color="white"
-                        fontWeight="bold"
-                        cursor="pointer"
-                      >
-                        {teamA.name}
-                      </Text>
-                    </Flex>
-
-                    {/* Resultados */}
-                    <Flex align="center" mx={4}>
-                      {results.map((result, index) => {
-                        const { resultTeamA = 0, resultTeamB = 0 } = result;
-
-                        // Verificar si cualquier resultado tiene puntaje > 0
-                        const anyResultExists = results.some(
-                          (r) =>
-                            (r.resultTeamA ?? 0) > 0 || (r.resultTeamB ?? 0) > 0
-                        );
-
-                        return (
-                          <Flex key={index} align="center">
-                            {/* Mostrar cuadradito verde si hay resultados */}
-                            {resultTeamA > 0 || resultTeamB > 0 ? (
-                              <Box
-                                width="20px"
-                                height="20px"
-                                border="2px solid"
-                                borderColor="green.400"
-                                bg="green.400"
-                                opacity={0.5}
-                                mr={2}
-                              />
-                            ) : (
-                              // Mostrar cuadradito transparente solo si hay algún otro resultado
-                              anyResultExists && (
-                                <Box
-                                  width="20px"
-                                  height="20px"
-                                  border="2px solid"
-                                  borderColor="gray.500"
-                                  bg="transparent"
-                                  opacity={0.5}
-                                  mr={2}
-                                />
-                              )
-                            )}
-
-                            {/* Mostrar "VS" si hay al menos un resultado */}
-                            {anyResultExists && index < results.length - 1 && (
-                              <Text
-                                color="white"
-                                fontWeight="bold"
-                                pl={4}
-                                pr={4}
-                              >
-                                VS
-                              </Text>
-                            )}
-                          </Flex>
-                        );
-                      })}
-                    </Flex>
-
-                    <Flex align="center">
-                      <Text
-                        fontSize="lg"
-                        color="white"
-                        fontWeight="bold"
-                        cursor="pointer"
-                      >
-                        {teamB.name}
-                      </Text>
-                      {teamB.logoUrl ? (
-                        <Image
-                          src={teamB.logoUrl}
-                          alt={teamB.name}
-                          boxSize="40px"
-                          borderRadius="md"
-                          ml={2}
-                        />
-                      ) : (
-                        <Box
-                          bg="gray.500"
-                          boxSize="40px"
-                          borderRadius="md"
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          ml={2}
-                        />
-                      )}
-                    </Flex>
-                  </Flex>
-                </Box>
-              ))}
             </Box>
           ))
         ) : (
-          <Text color="white">No hay partidos disponibles.</Text>
+          <Text color="white">No hay partidos programados.</Text>
         )}
       </Stack>
+
+      {loading && <Text color="white">Cargando...</Text>}
+      {error && <Text color="red.500">Error al cargar partidos.</Text>}
+
+      <Button
+        mt={6}
+        bg="rgb(177, 203, 2)"
+        color="black"
+        _hover={{ bg: "rgb(140, 160, 2)" }}
+        w="full"
+        onClick={handleGoToHome}
+      >
+        Ver Fixture
+      </Button>
     </Box>
   );
 };
-
 export default Fixture;

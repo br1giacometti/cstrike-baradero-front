@@ -22,12 +22,9 @@ export interface Tournament {
 
 export interface Fixture {
   name: string;
-  createdAt: Date;
-  teams: Team[];
   matches: Match[];
   id: number;
-  MatchDay: MatchDay[];
-  status: TournamentStatus;
+  tournamentId: number;
 }
 
 export interface Score {
