@@ -34,7 +34,7 @@ const useAllPlayerPaginated = () => {
     if (invalidated !== undefined) {
       dispatch({ type: FetchActionTypes.Start });
       repository
-        .getAllPlayerPaginated(currentPage, 10, debouncedInputValue)
+        .getAllPlayerPaginated(currentPage, 100, debouncedInputValue)
         .then((data) => {
           dispatch({ type: FetchActionTypes.Succeess, payload: data.data });
           setMeta(data.meta);
