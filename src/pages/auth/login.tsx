@@ -10,7 +10,7 @@ const LoginPage = () => {
   }, [router]);
 
   const navigateToSignUp = useCallback(() => {
-    //router.push("/auth/sign-up");
+    router.push("/auth/sign-up");
   }, [router]);
 
   return (
