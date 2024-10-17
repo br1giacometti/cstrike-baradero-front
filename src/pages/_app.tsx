@@ -5,7 +5,6 @@ import { Center, ChakraProvider } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
 
 import { AuthProvider, PrivateRouteWrapper } from "@kushitech/auth-module";
-
 import AppLayout from "Base/layout/AppLayout";
 import styleCache from "Base/styles/styleCache";
 import theme from "Base/theme";
@@ -24,13 +23,13 @@ export default function App({ Component, pageProps, router }: AppProps) {
   // Redirección a login si el usuario no está autenticado
   const handleRedirectToLogin = useCallback(() => {
     if (isClientSide) {
-      nextRouter.replace("/auth/login");
+      nextRouter.replace("/auth-public/public");
     }
   }, [nextRouter]);
 
-  // Redirección automática de "/" a "/auth-public/public"
+  // Redirección automática de "/" a "/auth-public/public", excepto si ya está en "/auth/login"
   useEffect(() => {
-    if (router.pathname === "/") {
+    if (router.pathname === "/" && router.asPath !== "/auth/login") {
       router.replace("/auth-public/public");
     }
   }, [router]);
