@@ -14,13 +14,13 @@ interface PlayerAggregatedStats {
   team: string;
   totalKills: number;
   totalDeaths: number;
+  kda: number; // Añadir KDA como propiedad
 }
 
 const TopPlayers = () => {
   const router = useRouter();
   const { matchstatsList, loading, error } = useAllMatchStatsService();
 
-  // Agrupa los datos por jugador y suma los stats
   const aggregatedStats = useMemo(() => {
     const playerMap = new Map<string, PlayerAggregatedStats>();
 
@@ -38,11 +38,22 @@ const TopPlayers = () => {
           team: teamName,
           totalKills: match.kills,
           totalDeaths: match.deaths,
+          kda: 0,
         });
       }
     });
 
-    return Array.from(playerMap.values());
+    const playersArray = Array.from(playerMap.values());
+    // Calcular el KDA después de agregar todos los stats
+    playersArray.forEach((player) => {
+      player.kda =
+        player.totalDeaths === 0
+          ? player.totalKills
+          : player.totalKills / player.totalDeaths;
+    });
+
+    // Ordenar por KDA de forma descendente
+    return playersArray.sort((a, b) => b.kda - a.kda);
   }, [matchstatsList]);
 
   const columns: BaseColumn<PlayerAggregatedStats>[] = useMemo(
@@ -51,6 +62,11 @@ const TopPlayers = () => {
       { label: "Equipo", selector: (row) => row.team },
       { label: "Kills", selector: (row) => row.totalKills },
       { label: "Muertes", selector: (row) => row.totalDeaths },
+      {
+        label: "KDA",
+        selector: (row) =>
+          row.kda === Infinity ? row.totalKills : row.kda.toFixed(2),
+      },
     ],
     []
   );

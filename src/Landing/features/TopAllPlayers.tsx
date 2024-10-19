@@ -1,8 +1,6 @@
-// TopPlayers.tsx
 import { useMemo } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import useAllMatchStatsService from "MatchStats/data/MatchStatsRepository/hooks/useAllMatchStatsService";
-import { MatchStats } from "MatchStats/data/MatchStatsRepository";
 import { BaseColumn } from "Base/components/DataTable";
 import TableContent from "Landing/components/TableContent";
 import { useRouter } from "next/router";
@@ -13,6 +11,7 @@ interface PlayerAggregatedStats {
   team: string;
   totalKills: number;
   totalDeaths: number;
+  kda: number; // Añadir KDA como propiedad
 }
 
 const TopAllPlayers = () => {
@@ -37,11 +36,22 @@ const TopAllPlayers = () => {
           team: teamName,
           totalKills: match.kills,
           totalDeaths: match.deaths,
+          kda: 0,
         });
       }
     });
 
-    return Array.from(playerMap.values());
+    const playersArray = Array.from(playerMap.values());
+    // Calcular el KDA después de agregar todos los stats
+    playersArray.forEach((player) => {
+      player.kda =
+        player.totalDeaths === 0
+          ? player.totalKills
+          : player.totalKills / player.totalDeaths;
+    });
+
+    // Ordenar por KDA de forma descendente
+    return playersArray.sort((a, b) => b.kda - a.kda);
   }, [matchstatsList]);
 
   const columns: BaseColumn<PlayerAggregatedStats>[] = useMemo(
@@ -50,6 +60,11 @@ const TopAllPlayers = () => {
       { label: "Equipo", selector: (row) => row.team },
       { label: "Kills", selector: (row) => row.totalKills },
       { label: "Muertes", selector: (row) => row.totalDeaths },
+      {
+        label: "KDA",
+        selector: (row) =>
+          row.kda === Infinity ? row.totalKills : row.kda.toFixed(2),
+      },
     ],
     []
   );

@@ -14,7 +14,13 @@ import useRouteLoading from "Base/utils/hooks/useRouteLoading";
 const isClientSide = typeof window !== "undefined";
 
 // Rutas públicas que no requieren autenticación
-const PUBLIC_ROUTES = ["/auth-public/public", "/auth/login", "/auth/sign-up"];
+const PUBLIC_ROUTES = [
+  "/auth-public/public",
+  "/auth/login",
+  "/auth/sign-up",
+  "/auth-public/fixture/fixture",
+  "/auth-public/stats/stats",
+];
 
 export default function App({ Component, pageProps, router }: AppProps) {
   const { loading: isRouteLoading } = useRouteLoading();

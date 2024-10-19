@@ -65,6 +65,7 @@ const TopPlayersTable = () => {
       { label: t("Equipo"), selector: (row) => row.nombreEquipo },
       { label: t("Kills"), selector: (row) => row.kills },
       { label: t("Muertes"), selector: (row) => row.deaths },
+      { label: t("KDA"), selector: (row) => row.kills / row.deaths },
     ],
     [t]
   );
