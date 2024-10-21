@@ -24,7 +24,12 @@ const TopPlayers = () => {
   const aggregatedStats = useMemo(() => {
     const playerMap = new Map<string, PlayerAggregatedStats>();
 
-    matchstatsList.forEach((match) => {
+    // Filtrar para que no incluya a "THOMI"
+    const filteredMatchStats = matchstatsList.filter(
+      (match) => match.player?.name?.toUpperCase() !== "THOMI"
+    );
+
+    filteredMatchStats.forEach((match) => {
       const playerName = match.player?.name || "N/A";
       const teamName = match.team?.name || "Sin equipo";
 

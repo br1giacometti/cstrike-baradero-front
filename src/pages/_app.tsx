@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { Center, ChakraProvider } from "@chakra-ui/react";
@@ -10,47 +10,52 @@ import styleCache from "Base/styles/styleCache";
 import theme from "Base/theme";
 import { Loading } from "Base/components";
 import useRouteLoading from "Base/utils/hooks/useRouteLoading";
+import { match } from "path-to-regexp"; // Asegúrate de instalar path-to-regexp
 
 const isClientSide = typeof window !== "undefined";
 
-// Rutas públicas que no requieren autenticación
+// Definición de rutas públicas con segmentos dinámicos
 const PUBLIC_ROUTES = [
   "/auth-public/public",
   "/auth/login",
   "/auth/sign-up",
   "/auth-public/fixture/fixture",
   "/auth-public/stats/stats",
+  "/auth-public/filter/:id/:id", // Rutas con parámetros dinámicos
 ];
+
+// Función para validar rutas públicas usando path-to-regexp
+const isPublicRoute = (path: string) =>
+  PUBLIC_ROUTES.some((route) => match(route)(path) !== false);
 
 export default function App({ Component, pageProps, router }: AppProps) {
   const { loading: isRouteLoading } = useRouteLoading();
   const nextRouter = useRouter();
 
-  // Redirección a login si el usuario no está autenticado
   const handleRedirectToLogin = useCallback(() => {
     if (isClientSide) {
       nextRouter.replace("/auth-public/public");
     }
   }, [nextRouter]);
 
-  // Redirección automática de "/" a "/auth-public/public", excepto si ya está en "/auth/login"
   useEffect(() => {
     if (router.pathname === "/" && router.asPath !== "/auth/login") {
       router.replace("/auth-public/public");
     }
   }, [router]);
 
-  const isPublicRoute = PUBLIC_ROUTES.includes(router.pathname);
+  const isPublic = useMemo(
+    () => isPublicRoute(router.pathname),
+    [router.pathname]
+  );
 
   return (
     <AuthProvider>
       <CacheProvider value={styleCache}>
         <ChakraProvider theme={theme}>
-          {isPublicRoute ? (
-            // Rutas públicas sin autenticación
+          {isPublic ? (
             <Component {...pageProps} />
           ) : (
-            // Rutas protegidas (Backoffice)
             <PrivateRouteWrapper
               loadingElement={() => <Loading h="100vh" />}
               redirectLogin={handleRedirectToLogin}
